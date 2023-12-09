@@ -1,0 +1,166 @@
+Items: {
+	WireBugItem: {
+		DisplayName: 翔虫
+		Tooltip: ""
+	}
+}
+
+Keybinds: {
+	WireDash.DisplayName: 翔虫冲刺/悬停
+	WireSkill1.DisplayName: 铁丝虫技1
+	WireSkill2.DisplayName: 铁丝虫技2
+	SwitchSkill.DisplayName: 迅速切换
+}
+
+Buffs: {
+	CDBuff1: {
+		DisplayName: ""
+		Description: ""
+	}
+
+	CDBuff2: {
+		DisplayName: ""
+		Description: ""
+	}
+
+	CDBuff3: {
+		DisplayName: ""
+		Description: ""
+	}
+
+	CDBuff4: {
+		DisplayName: ""
+		Description: ""
+	}
+
+	SwitchSkillBuff: {
+		DisplayName: ""
+		Description: ""
+	}
+}
+
+Projectiles: {
+	LanceDownProj.DisplayName: 翔虫
+	WireDashProj.DisplayName: 翔虫
+	LanceGuardProj.DisplayName: 翔虫
+	LanceBugRoundingProj.DisplayName: 铁虫丝线
+	LanceWeaponProj.DisplayName: 长枪
+	GPSpark.DisplayName: GP特效
+	SlashDownProj.DisplayName: 翔虫
+	GSwordWeaponProj.DisplayName: 大剑
+	AtkPowerUpProj.DisplayName: 翔虫
+	BackGSwordProj.DisplayName: 大剑
+	LSwordWeaponProj.DisplayName: 太刀
+	SernePoseProj.DisplayName: 翔虫
+	SakuraSlashProj.DisplayName: 翔虫
+	SakuraBombProj.DisplayName: 樱花铁虫气刃斩
+	SlashProj.DisplayName: 斩击
+	SwingBladeProj.DisplayName: 单手剑
+	SwingBladeRoundingProj.DisplayName: 铁虫丝线
+	RisingDragonProj.DisplayName: 翔虫
+	SBladeWeaponProj.DisplayName: 单手剑
+	RisingDragonWeaponProj.DisplayName: 翔虫
+	DamageProj.DisplayName: 伤害判定
+	ReturningBug.DisplayName: 翔虫
+	RushAndBoomProj.DisplayName: 翔虫
+	ReverseBlastProj.DisplayName: 翔虫
+	GroundSplitterProj.DisplayName: 翔虫
+}
+
+Skills: {
+	SkywardThrust: 冲天突刺
+	WireDash: 翔虫冲刺
+	AnchorRage: 锚泊蓄能
+	HuntingEdge: 狩猎锋刃
+	PowerSheathe: 强化纳刀
+	SerenePose: 水月架势
+	SakuraSlash: 樱花铁虫气刃斩
+	Windmill: 风车
+	MetsuShoryugeki: 灭·升龙击
+	BulletBarrage: 超级全弹发射
+	ReverseBlast: 暴风逆退
+	GroundSplitter: 地裂斩
+	ShroudedVault: 胧翔
+}
+
+SkillInfos: {
+	SwitchBookRed: 迅速切换之书【朱】
+	SwitchBookBlue: 迅速切换之书【苍】
+	SwitchBookDesc:
+		'''
+		当前装备的铁虫丝技:
+		【{0}】
+		【{1}】
+		右键打开技能装备面板
+		翔虫没有就绪时无法打开
+		'''
+	SelectSB: 选择铁虫丝技
+	ChangeSB: 变更铁虫丝技
+	BugRecoverySpeed: 翔虫槽回复速度：{0}秒
+	BugCost: 需要翔虫槽：{0}
+	SkywardThrust:
+		'''
+		枪尖直破云霄，后又贯穿大地。
+		用翔虫持长枪向上空突刺，随后顺势朝正下方落下并突刺的招式。
+		落下突刺时为多段攻击。
+		'''
+	AnchorRage:
+		'''
+		算准时机，架盾承受攻击的招式。（需要持盾）
+		这招的精髓在于吸收敌方攻击的力量，将之高效地化为己用。
+		虽然风险较高，但攻击的威力越高，吸收的力量也就越大。
+		'''
+	HuntingEdge:
+		'''
+		十分大胆的招式，可使用翔虫在空中释放施加全身体重的回旋斩。
+		命中时，玩家的身体会向上跳跃，并趁势使出蓄力斩……这便是此招式的真正目的。
+		命中后，在空中按鼠标左键，即可衍生强力的蓄力攻击。
+		'''
+	PowerSheathe:
+		'''
+		使用翔虫迅速缩短距离并纳刀，为下一次攻击做准备的招式。
+		纳刀后会暂时提升攻击力。既可缩短距离为下一次攻击做准备，
+		也可拉开距离摆脱攻击，一种相当全能的招式。
+		'''
+	SerenePose:
+		'''
+		展开铁虫丝，用刀身柔韧地斩向要碰上铁虫丝的目标。
+		可望而不可碰，正可谓镜花水月。
+		'''
+	SakuraSlash:
+		'''
+		疾风般的招式，可使用翔虫在地面上迅速缩短距离并发动斩击。
+		会对砍中的地方造成带有时间差的追击，绽开无数伤口。
+		'''
+	Windmill:
+		'''
+		使用翔虫吐出的丝，借助离心力挥舞武器的多段攻击。
+		挥舞过程中，可以使怪物的攻击无效。
+		'''
+	MetsuShoryugeki:
+		'''
+		以翔虫增强威势的冲天打击。可利用盾牌施展强烈一击。
+		招式开始时的一瞬间可防御攻击，成功防御即可达成反击，
+		使招式的伤害大幅上升。
+		'''
+	BulletBarrage: 使用翔虫突进,迅速接近目标并放出大量弹幕，非同寻常的招式。
+	ReverseBlast: 瞬间向后方撤退的招式。使用翔虫停止。
+	GroundSplitter:
+		'''
+		使用翔虫向前方踏步，并发动豪迈上捞斩的招式。
+		通过像刨地一样对地面进行摩擦，使炮身变热，可以暂时提升射弹的威力。
+		'''
+	ShroudedVault:
+		'''
+		使用翔虫迅速缩短距离，受到攻击后立刻转为反击的招式。
+		能接近敌人而不必担心被击中，适合用于接近怪物，用作发起进攻的起手招式。
+		'''
+}
+
+PrefixDescription: +{0}% 翔虫回复速度
+
+Prefixes: {
+	WirebugWhisperer1.DisplayName: 翔虫使I
+	WirebugWhisperer2.DisplayName: 翔虫使II
+	WirebugWhisperer3.DisplayName: 翔虫使III
+}

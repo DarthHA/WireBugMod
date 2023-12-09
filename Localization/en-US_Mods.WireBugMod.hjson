@@ -1,0 +1,167 @@
+Items: {
+	WireBugItem: {
+		DisplayName: Wire Bug
+		Tooltip: ""
+	}
+}
+
+Keybinds: {
+	WireDash.DisplayName: Wire Dash/Midair Stop
+	WireSkill1.DisplayName: Silkbind 1
+	WireSkill2.DisplayName: Silkbind 2
+	SwitchSkill.DisplayName: Switch Skill Swap
+}
+
+Buffs: {
+	CDBuff1: {
+		DisplayName: ""
+		Description: ""
+	}
+
+	CDBuff2: {
+		DisplayName: ""
+		Description: ""
+	}
+
+	CDBuff3: {
+		DisplayName: ""
+		Description: ""
+	}
+
+	CDBuff4: {
+		DisplayName: ""
+		Description: ""
+	}
+
+	SwitchSkillBuff: {
+		DisplayName: ""
+		Description: ""
+	}
+}
+
+Projectiles: {
+	LanceDownProj.DisplayName: Wirebug
+	WireDashProj.DisplayName: Wirebug
+	LanceGuardProj.DisplayName: Wirebug
+	LanceBugRoundingProj.DisplayName: Silkbind
+	LanceWeaponProj.DisplayName: Lance
+	GPSpark.DisplayName: GP Effect
+	SlashDownProj.DisplayName: Wirebug
+	GSwordWeaponProj.DisplayName: Great Sword
+	AtkPowerUpProj.DisplayName: Wirebug
+	BackGSwordProj.DisplayName: Great Sword
+	LSwordWeaponProj.DisplayName: Long Sword
+	SernePoseProj.DisplayName: Wirebug
+	SakuraSlashProj.DisplayName: Wirebug
+	SakuraBombProj.DisplayName: Silkbind Sakura Slash
+	SlashProj.DisplayName: Slash
+	SwingBladeProj.DisplayName: Short Blade
+	SwingBladeRoundingProj.DisplayName: Silkbind
+	RisingDragonProj.DisplayName: Wirebug
+	SBladeWeaponProj.DisplayName: Short Blade
+	RisingDragonWeaponProj.DisplayName: Wirebug
+	DamageProj.DisplayName: Damage Aura
+	ReturningBug.DisplayName: Wirebug
+	RushAndBoomProj.DisplayName: Wirebug
+	ReverseBlastProj.DisplayName: Wirebug
+	GroundSplitterProj.DisplayName: Wirebug
+}
+
+Skills: {
+	SkywardThrust: Skyward Thrust
+	WireDash: Wire Dash
+	AnchorRage: Anchor Rage
+	HuntingEdge: Hunting Edge
+	PowerSheathe: Power Sheathe
+	SerenePose: Serene Pose
+	SakuraSlash: Silkbind Sakura Slash
+	Windmill: Windmill
+	MetsuShoryugeki: Metsu Shoryugeki
+	BulletBarrage: Bullet Barrage
+	ReverseBlast: Reverse Blast
+	GroundSplitter: Ground Splitter
+	ShroudedVault: Shrouded Vault
+}
+
+SkillInfos: {
+	SwitchBookRed: Red Scroll
+	SwitchBookBlue: Blue Scroll
+	SwitchBookDesc:
+		'''
+		Current Silkbind Attacks:
+		[{0}]
+		[{1}]
+		Right click to open the skill loadout panel
+		Cannot open when Wirebugs are not ready
+		'''
+	SelectSB: Select Silkbind Attack
+	ChangeSB: Change Silkbind Attack
+	BugRecoverySpeed: Wirebug Gauge recovery speed: {0}s
+	BugCost: Wirebug Gauge cost: {0}
+	SkywardThrust:
+		'''
+		A technique where a Wirebug launches you high into the air.
+		Thrust your lance towards the heavens and then pierce the earth.
+		Note: The falling portion of the attack inflicts multiple hits.
+		'''
+	AnchorRage:
+		'''
+		A defensive skill requiring a shield and some patience.
+		The technique is to efficiently brace and absorb the power of the incoming attack-
+		a high-risk move, but the more powerful the attack you absorb,
+		the more your attack power will increase.
+		'''
+	HuntingEdge:
+		'''
+		A daring aerial attack, using a Wirebug to fly up for a hefty Roundslash.
+		If the attack connects, the hunter bounces upward and transitions directly into the next Charged Slash attack, forming the crux of this attack.
+		After an attack connects, follow-up with left click while in midair for a powerful charged attack.
+		'''
+	PowerSheathe:
+		'''
+		A Wirebug technique to prepare for the next attack, auto-sheathing as you draw in and boosting attack power briefly.
+		You can either close the gap ready for the next attack, or pull back to evade, making this an all-round technique.
+		'''
+	SerenePose:
+		'''
+		A move that casts out Ironsilk, and auto- matically counters any incoming attack. 
+		Like a reflection of the moon, it's visible, but untouchable. 
+		'''
+	SakuraSlash:
+		'''
+		A whirlwind-like attack, dashing and slicing past the target with a Wirebug.
+		The hit causes multiple lacerations over time, inducing additional damage.
+		'''
+	Windmill:
+		'''
+		A multi-stage attack using a Wirebug's silk to spin the weapon around.
+		Any incoming attack can be negated while the weapon is spinning.
+		'''
+	MetsuShoryugeki:
+		'''
+		A jumping Wirebug attack that uses your shield to uppercut your target.
+		At the beginning of the attack, there is a moment where you can perform a Guard.
+		A well-timed counter can further add to the damage dealt.
+		'''
+	BulletBarrage: Uses a Wirebug to dash toward your target, unleashing as much as projectiles.
+	ReverseBlast: A rapid, backward evasive maneuver using a Wirebug to stop.
+	GroundSplitter:
+		'''
+		Uses a Wirebug to move forward and jump into a vigorous upward slash.
+		Scraping the gunlance on the ground heats up the barrel,
+		temporarily increasing the damage dealt by projectiles.
+		'''
+	ShroudedVault:
+		'''
+		A technique that uses a Wirebug to close in rapidly on the enemy, while instantly countering any attacks.
+		Perfect for a good start in battle, as you can jump straight to the heart of the action without fear of taking a hit.
+		'''
+}
+
+PrefixDescription: +{0}% Wirebug recovery rate
+
+Prefixes: {
+	WirebugWhisperer1.DisplayName: Wirebug Whisperer I
+	WirebugWhisperer2.DisplayName: Wirebug Whisperer II
+	WirebugWhisperer3.DisplayName: Wirebug Whisperer III
+}

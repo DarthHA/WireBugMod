@@ -1,0 +1,3 @@
+displayName = Wire Bug
+author = V
+version = 0.1
