@@ -61,7 +61,7 @@ namespace WireBugMod.Projectiles.GSword
         public override void AI()
         {
             Player owner = Main.player[Projectile.owner];
-            if (owner.IsDead() || owner.HeldItem.GetWeaponType() != System.WeaponType.GreatSword)
+            if (owner.IsDead())
             {
                 Projectile.Kill();
                 return;

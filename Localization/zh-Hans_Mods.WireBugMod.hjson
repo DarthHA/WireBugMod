@@ -65,9 +65,20 @@ Projectiles: {
 	RushAndBoomProj.DisplayName: 翔虫
 	ReverseBlastProj.DisplayName: 翔虫
 	GroundSplitterProj.DisplayName: 翔虫
-	// PiercingBindProj.DisplayName: Piercing Bind Proj
-	// PiercingBindBugRoundingProj.DisplayName: Piercing Bind Bug Rounding Proj
-	// PiercingBindBugRoundingProj2.DisplayName: Piercing Bind Bug Rounding Proj2
+	PiercingBindProj.DisplayName: 铁虫丝
+	PiercingBindBugRoundingProj.DisplayName: 铁虫丝
+	PiercingBindBugRoundingProj2.DisplayName: 铁虫丝
+}
+
+WeaponType: {
+	GreatSword: 剑类
+	Lance: 长矛
+	Axe: 斧子
+	Hammer: 锤子
+	LightBowgun: 枪械
+	HeavyBowgun: 火箭发射器
+	Bow: 弓箭
+	None: 无
 }
 
 Skills: {
@@ -102,6 +113,7 @@ SkillInfos: {
 	ChangeSB: 变更铁虫丝技
 	BugRecoverySpeed: 翔虫槽回复速度：{0}秒
 	BugCost: 需要翔虫槽：{0}
+	WeaponAvailable: "适用武器: "
 	SkywardThrust:
 		'''
 		枪尖直破云霄，后又贯穿大地。

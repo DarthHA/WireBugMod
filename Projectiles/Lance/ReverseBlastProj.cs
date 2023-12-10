@@ -121,7 +121,7 @@ namespace WireBugMod.Projectiles
 
                 if (Projectile.ai[1] > 10)
                 {
-                    if (owner.GetModPlayer<WireBugPlayer>().JustPressedWireSkill1 || Collided || Projectile.ai[1] > 60)              //超过5秒,撞墙或者再次按下按键时
+                    if (Collided || Projectile.ai[1] > 60 || (owner.GetSkillKeyJPStatus("ReverseBlast").HasValue && owner.GetSkillKeyJPStatus("ReverseBlast").Value))              //超过1秒,撞墙或者再次按下按键时
                     {
                         Phase = ReverseBlastPhase.Stop;
                         Projectile.ai[1] = 0;

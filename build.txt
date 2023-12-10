@@ -1,3 +1,5 @@
 displayName = Wire Bug
-author = V
+author = Volknet_Online
 version = 0.1
+homepage = https://space.bilibili.com/442236013
+includeSource = true

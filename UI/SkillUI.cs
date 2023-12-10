@@ -25,9 +25,11 @@ namespace WireBugMod.UI
         public int Pages = 0;
         public string[] SkillNameRight = { "", "", "", "", "", "", "", "" };
         public int SelectedSkillRight = -1;
+        public int SelectedSkillRightTemp = -1;
 
         public int SelectedSkillLeft = -1;
         public string[] SkillNameLeft = { "", "", "", "" };
+        public int SelectedSkillLeftTemp = -1;
 
         public string SkillDesc = "";
         public string SkillTitle = "";
@@ -40,8 +42,8 @@ namespace WireBugMod.UI
         public override void OnInitialize()
         {
             Panel = new UIPanel();
-            Panel.Left.Set(300, 0);
-            Panel.Top.Set(300, 0);
+            Panel.Left.Set(-BackWidth / 2f, 0.5f);
+            Panel.Top.Set(-BackHeight / 2f, 0.5f);
             Panel.Width.Set(BackWidth, 0);
             Panel.Height.Set(BackHeight, 0);
             Panel.PaddingLeft = Panel.PaddingRight = Panel.PaddingTop = Panel.PaddingBottom = 0;
@@ -156,6 +158,10 @@ namespace WireBugMod.UI
             {
                 Rectangle hitbox1 = SkillLeft[i].GetInnerDimensions().ToRectangle();
                 bool selected = SelectedSkillLeft == i;
+                if (SelectedSkillLeftTemp != -1)
+                {
+                    selected = SelectedSkillLeftTemp == i;
+                }
                 if (selected)
                 {
                     spriteBatch.Draw(i < 2 ? RedBookSlotS : BlueBookSlotS, hitbox1, Color.White);
@@ -173,6 +179,10 @@ namespace WireBugMod.UI
             {
                 Rectangle hitbox1 = SkillRight[i].GetInnerDimensions().ToRectangle();
                 bool selected = SelectedSkillRight == i;
+                if (SelectedSkillRightTemp != -1)
+                {
+                    selected = SelectedSkillRightTemp == i;
+                }
                 if (selected)
                 {
                     spriteBatch.Draw(SkillSlotSTex, hitbox1, Color.White);
@@ -226,35 +236,44 @@ namespace WireBugMod.UI
             if (UIManager.ShouldUpdate)
             {
                 UIManager.ShouldUpdate = false;
+                SelectedSkillLeftTemp = -1;
+                SelectedSkillRightTemp = -1;
                 SelectedSkillLeft = -1;
                 SelectedSkillRight = -1;
                 RefreshInfo();
             }
-            Rectangle hitbox = Panel.GetInnerDimensions().ToRectangle();
-            if (ContainsMouse(hitbox))
+
+            if (IsMouseHovering)
             {
                 Main.LocalPlayer.mouseInterface = true;
             }
 
+            SelectedSkillLeftTemp = -1;
             for (int i = 0; i < 4; i++)
             {
                 if (SkillLeft[i].IsMouseHovering)
                 {
-                    SelectedSkillLeft = i;
-                    UpdateDescOnly();
-                    break;
-                }
-            }
-            for (int i = 0; i < 8; i++)
-            {
-                if (SkillRight[i].IsMouseHovering && !SkillRight[i].IgnoresMouseInteraction)
-                {
-                    SelectedSkillRight = i;
+                    SelectedSkillLeftTemp = i;
                     UpdateDescOnly();
                     break;
                 }
             }
 
+            SelectedSkillRightTemp = -1;
+            for (int i = 0; i < 8; i++)
+            {
+                if (SkillRight[i].IsMouseHovering && !SkillRight[i].IgnoresMouseInteraction)
+                {
+                    SelectedSkillRightTemp = i;
+                    UpdateDescOnly();
+                    break;
+                }
+            }
+
+            if (SelectedSkillLeftTemp == -1 && SelectedSkillRightTemp == -1)
+            {
+                UpdateDescOnly();
+            }
         }
 
         private void SkillLeft_OnRightClick(UIMouseEvent evt, UIElement listeningElement)
@@ -300,6 +319,7 @@ namespace WireBugMod.UI
             {
                 Pages++;
                 SelectedSkillRight = -1;
+                SelectedSkillRightTemp = -1;
                 RefreshInfo();
             }
 
@@ -315,7 +335,27 @@ namespace WireBugMod.UI
                     if (SelectedSkillLeft != -1)
                     {
                         int index = Pages * 8 + SelectedSkillRight;
-                        Main.LocalPlayer.GetModPlayer<UIPlayer>().SetSkillName(WeaponSkillData.SkillList[index], SelectedSkillLeft);
+                        int AnotherIndex = -1;
+                        switch (SelectedSkillLeft)
+                        {
+                            case 0:
+                                AnotherIndex = 1;
+                                break;
+                            case 1:
+                                AnotherIndex = 0;
+                                break;
+                            case 2:
+                                AnotherIndex = 3;
+                                break;
+                            case 3:
+                                AnotherIndex = 2;
+                                break;
+                        }
+                        if (WeaponSkillData.SkillList[index] != Main.LocalPlayer.GetModPlayer<UIPlayer>().GetSkillName(AnotherIndex))
+                        {
+                            Main.LocalPlayer.GetModPlayer<UIPlayer>().SetSkillName(WeaponSkillData.SkillList[index], SelectedSkillLeft);
+                        }
+                        break;
                     }
                 }
             }
@@ -329,6 +369,7 @@ namespace WireBugMod.UI
                 if (SkillLeft[i].IsMouseHovering)
                 {
                     SelectedSkillLeft = i;
+                    break;
                 }
             }
             SelectedSkillRight = -1;
@@ -359,50 +400,26 @@ namespace WireBugMod.UI
             SkillNameLeft[2] = Language.GetTextValue("Mods.WireBugMod.Skills." + modplayer.SwitchSkillName1);
             SkillNameLeft[3] = Language.GetTextValue("Mods.WireBugMod.Skills." + modplayer.SwitchSkillName2);
 
-            SkillTitle = "";
-            SkillDesc = "";
-            if (SelectedSkillRight != -1)
-            {
-                int index = Pages * 8 + SelectedSkillRight;
-                SkillTitle = WeaponSkillData.SkillList[index];
-            }
-            else if (SelectedSkillLeft != -1)
-            {
-                SkillTitle = Main.LocalPlayer.GetModPlayer<UIPlayer>().GetSkillName(SelectedSkillLeft);
-            }
-            if (SkillTitle != "")
-            {
-                int Cooldown = 60;
-                int UseBugCount = 1;
-                foreach (BaseSkill skill in SkillLoader.skills)
-                {
-                    if (skill.SkillName == SkillTitle)
-                    {
-                        Cooldown = skill.Cooldown;
-                        UseBugCount = skill.UseBugCount;
-                        break;
-                    }
-                }
-                SkillDesc = Language.GetTextValue("Mods.WireBugMod.SkillInfos." + SkillTitle) + "\n";
-                SkillDesc = Language.ActiveCulture.LegacyId == (int)GameCulture.CultureName.Chinese ? BreakLongStringForCN(SkillDesc, 35) : BreakLongString(SkillDesc, 35);
-                SkillDesc += string.Format(Language.GetTextValue("Mods.WireBugMod.SkillInfos.BugRecoverySpeed"), (Cooldown / 60f).ToString()) + "\n";
-                SkillDesc += string.Format(Language.GetTextValue("Mods.WireBugMod.SkillInfos.BugCost"), UseBugCount.ToString());
-                SkillTitle = Language.GetTextValue("Mods.WireBugMod.Skills." + SkillTitle);
-            }
-            else
-            {
-                SkillDesc = "";
-            }
+            UpdateDescOnly();
         }
 
         private void UpdateDescOnly()
         {
             SkillTitle = "";
             SkillDesc = "";
-            if (SelectedSkillRight != -1)
+            if (SelectedSkillRightTemp != -1)
+            {
+                int index = Pages * 8 + SelectedSkillRightTemp;
+                SkillTitle = WeaponSkillData.SkillList[index];
+            }
+            else if (SelectedSkillRight != -1)
             {
                 int index = Pages * 8 + SelectedSkillRight;
                 SkillTitle = WeaponSkillData.SkillList[index];
+            }
+            else if (SelectedSkillLeftTemp != -1)
+            {
+                SkillTitle = Main.LocalPlayer.GetModPlayer<UIPlayer>().GetSkillName(SelectedSkillLeftTemp);
             }
             else if (SelectedSkillLeft != -1)
             {
@@ -412,19 +429,25 @@ namespace WireBugMod.UI
             {
                 int Cooldown = 60;
                 int UseBugCount = 1;
+                string weaponlist = "";
                 foreach (BaseSkill skill in SkillLoader.skills)
                 {
                     if (skill.SkillName == SkillTitle)
                     {
                         Cooldown = skill.Cooldown;
                         UseBugCount = skill.UseBugCount;
+                        foreach(WeaponType type in skill.weaponType)
+                        {
+                            weaponlist += Language.GetTextValue("Mods.WireBugMod.WeaponType." + type.ToString()) + ",";
+                        }
                         break;
                     }
                 }
                 SkillDesc = Language.GetTextValue("Mods.WireBugMod.SkillInfos." + SkillTitle) + "\n";
                 SkillDesc = Language.ActiveCulture.LegacyId == (int)GameCulture.CultureName.Chinese ? BreakLongStringForCN(SkillDesc, 35) : BreakLongString(SkillDesc, 35);
                 SkillDesc += string.Format(Language.GetTextValue("Mods.WireBugMod.SkillInfos.BugRecoverySpeed"), (Cooldown / 60f).ToString()) + "\n";
-                SkillDesc += string.Format(Language.GetTextValue("Mods.WireBugMod.SkillInfos.BugCost"), UseBugCount.ToString());
+                SkillDesc += string.Format(Language.GetTextValue("Mods.WireBugMod.SkillInfos.BugCost"), UseBugCount.ToString())+"\n";
+                SkillDesc += Language.GetTextValue("Mods.WireBugMod.SkillInfos.WeaponAvailable") + weaponlist;
                 SkillTitle = Language.GetTextValue("Mods.WireBugMod.Skills." + SkillTitle);
             }
             else
@@ -432,19 +455,6 @@ namespace WireBugMod.UI
                 SkillDesc = "";
             }
         }
-
-
-        private bool ContainsMouse(Rectangle hitbox)
-        {
-            Vector2 point = Main.MouseWorld - Main.screenPosition;
-            if (point.X > hitbox.X && point.Y > hitbox.Y && point.X < hitbox.X + hitbox.Width)
-            {
-                return point.Y < hitbox.Y + hitbox.Height;
-            }
-
-            return false;
-        }
-
 
         private string BreakLongString(string inputStr, int textWidth)
         {

@@ -57,7 +57,7 @@ namespace WireBugMod.Projectiles.Lance
         public override void AI()
         {
             Player owner = Main.player[Projectile.owner];
-            if (owner.IsDead() || owner.HeldItem.GetWeaponType() != System.WeaponType.Lance)
+            if (owner.IsDead())
             {
                 Projectile.Kill();
                 return;

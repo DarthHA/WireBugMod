@@ -63,7 +63,7 @@ namespace WireBugMod.Projectiles.SBlade
         public override void AI()
         {
             Player owner = Main.player[Projectile.owner];
-            if (owner.IsDead() || owner.HeldItem.GetWeaponType() != WeaponType.ShortBlade || !owner.hasRaisableShield)
+            if (owner.IsDead() || !owner.hasRaisableShield)
             {
                 Projectile.Kill();
                 return;

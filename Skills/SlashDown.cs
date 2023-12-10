@@ -29,7 +29,7 @@ namespace WireBugMod.Skills
 
 
 
-        public override List<WeaponType> weaponType => new List<WeaponType>() { WeaponType.GreatSword, WeaponType.ShortBlade };
+        public override List<WeaponType> weaponType => new List<WeaponType>() { WeaponType.GreatSword };
 
         public override bool OnUse(WireBugPlayer modplayer, int UseBug1, int UseBug2 = -1)
         {

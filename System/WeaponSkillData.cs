@@ -11,7 +11,6 @@ namespace WireBugMod.System
 {
     public enum WeaponType
     {
-        ShortBlade,
         GreatSword,
         Lance,
         Axe,
@@ -66,7 +65,7 @@ namespace WireBugMod.System
                     {
                         if (itemtmp.useStyle == ItemUseStyleID.Rapier)
                         {
-                            WeaponDictionary.Add(i, WeaponType.ShortBlade);
+                            WeaponDictionary.Add(i);
                         }
                         else if (itemtmp.useStyle == ItemUseStyleID.Swing)
                         {
@@ -107,6 +106,7 @@ namespace WireBugMod.System
                     SkillList.Add(skill.SkillName);
                 }
             }
+            //WriteJson();
         }
 
         public override void Unload()
@@ -117,16 +117,36 @@ namespace WireBugMod.System
 
         public static void WriteJson()
         {
-            Dictionary<string, string> temp = new();
+            Dictionary<int, string> temp = new();
             foreach (int i in WeaponDictionary.Keys)
             {
-                temp.Add(Lang.GetItemNameValue(i), WeaponDictionary[i].ToString());
+                temp.Add(i, WeaponDictionary[i].ToString());
             }
             string output = JsonConvert.SerializeObject(temp);
             File.WriteAllText(@"C:\WireBug\Weapon.json", output);
         }
 
         public static void ReadJson()
+        {
+            byte[] stext = ModContent.GetFileBytes("WireBugMod/WeaponData.json");
+            string otext = Encoding.UTF8.GetString(stext);
+            Dictionary<int, string> temp = JsonConvert.DeserializeObject<Dictionary<int, string>>(otext);
+
+            foreach (int key in temp.Keys)
+            {
+                int finditem = -1;
+                for (int i = 0; i < ItemLoader.ItemCount; i++)
+                {
+                    if (key == i) { finditem = i; break; }
+                }
+                if (finditem != -1)
+                {
+                    WeaponType wt = (WeaponType)Enum.Parse(typeof(WeaponType), temp[key]);
+                    WeaponDictionary.Add(finditem, wt);
+                }
+            }
+        }
+        public static void ReadJsonEN()
         {
             byte[] stext = ModContent.GetFileBytes("WireBugMod/WeaponData.json");
             string otext = Encoding.UTF8.GetString(stext);

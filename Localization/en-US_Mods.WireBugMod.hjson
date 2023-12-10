@@ -65,9 +65,20 @@ Projectiles: {
 	RushAndBoomProj.DisplayName: Wirebug
 	ReverseBlastProj.DisplayName: Wirebug
 	GroundSplitterProj.DisplayName: Wirebug
-	PiercingBindProj.DisplayName: Piercing Bind Proj
-	PiercingBindBugRoundingProj.DisplayName: Piercing Bind Bug Rounding Proj
-	PiercingBindBugRoundingProj2.DisplayName: Piercing Bind Bug Rounding Proj2
+	PiercingBindProj.DisplayName: Silkbind
+	PiercingBindBugRoundingProj.DisplayName: Silkbind
+	PiercingBindBugRoundingProj2.DisplayName: Silkbind
+}
+
+WeaponType: {
+	GreatSword: Swords
+	Lance: Spears
+	Axe: Axes
+	Hammer: Hammers
+	LightBowgun: Guns
+	HeavyBowgun: Rocket Launcher
+	Bow: Bows
+	None: None
 }
 
 Skills: {
@@ -102,6 +113,7 @@ SkillInfos: {
 	ChangeSB: Change Silkbind Attack
 	BugRecoverySpeed: Wirebug Gauge recovery speed: {0}s
 	BugCost: Wirebug Gauge cost: {0}
+	WeaponAvailable: "Applicable weapons: "
 	SkywardThrust:
 		'''
 		A technique where a Wirebug launches you high into the air.

@@ -227,6 +227,7 @@ namespace WireBugMod.System
 
         private void CheckDisableMeleeEffect()
         {
+            bool OldDisableMeleeEffect = DisableMeleeEffect;
             DisableMeleeEffect = false;
             foreach (Projectile proj in Main.projectile)
             {
@@ -239,6 +240,11 @@ namespace WireBugMod.System
                         return;
                     }
                 }
+            }
+            if(!DisableMeleeEffect && OldDisableMeleeEffect)        //防止尾刀出问题
+            {
+                Player.itemTime = 0;
+                Player.itemAnimation = 0;
             }
         }
 

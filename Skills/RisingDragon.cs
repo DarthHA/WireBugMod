@@ -25,7 +25,7 @@ namespace WireBugMod.Skills
         public override bool NotWireDash => true;
 
 
-        public override List<WeaponType> weaponType => new List<WeaponType>() { WeaponType.GreatSword, WeaponType.ShortBlade };
+        public override List<WeaponType> weaponType => new List<WeaponType>() { WeaponType.GreatSword };
 
         public override bool UseCondition(WireBugPlayer modplayer)
         {

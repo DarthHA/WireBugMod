@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.ComponentModel.DataAnnotations;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -23,15 +24,8 @@ namespace WireBugMod.Projectiles.SBlade
         public SwingBladePhase Phase = SwingBladePhase.Default;
 
         private float StringLen = 0;
-        //private Vector2 DrawCenter = Vector2.Zero;
 
-        /*
-        const int TrailCount = 15;
-        public float[] OldRot = new float[TrailCount];
-        public float[] OldRadian = new float[TrailCount];
-        public Vector2[] OldCenter = new Vector2[TrailCount];
-        private bool HasTrail = false;
-        */
+        private const float Length = 100;
         public override void SetStaticDefaults()
         {
 
@@ -55,7 +49,7 @@ namespace WireBugMod.Projectiles.SBlade
         public override void AI()
         {
             Player owner = Main.player[Projectile.owner];
-            if (owner.IsDead() || owner.HeldItem.GetWeaponType() != WeaponType.ShortBlade)
+            if (owner.IsDead())
             {
                 Projectile.Kill();
                 return;
@@ -79,7 +73,7 @@ namespace WireBugMod.Projectiles.SBlade
 
             owner.velocity.X = 0;
 
-            //owner.heldProj = Projectile.whoAmI;
+            owner.heldProj = Projectile.whoAmI;
             Projectile.Center = owner.Center;
             owner.itemLocation = Vector2.Zero;
             owner.itemTime = owner.itemAnimation = 2;
@@ -87,20 +81,18 @@ namespace WireBugMod.Projectiles.SBlade
 
             float rotdir = GetRotByDir(Projectile.rotation, owner.direction);
             owner.ChangeItemRotation(rotdir, false);
-            //60帧架盾，GP后切换为40帧
 
-            float BeginP = MathHelper.Pi / 6;
+
+            float ModifiedLength = Length + DrawUtils.GetItemTexture(owner.HeldItem.type).Size().Length() * 0.4f;
             if (Phase == SwingBladePhase.Begin)
             {
                 Projectile.ai[1]++;
-                Projectile.rotation = MathHelper.Lerp(BeginP, BeginP - MathHelper.Pi, Projectile.ai[1] / 15f);
-                StringLen = MathHelper.Lerp(0, 100, Projectile.ai[1] / 15f);
-                //DrawCenter = new Vector2(owner.direction, 0) * MathHelper.Lerp(0, 10, Projectile.ai[1] / 15f);
+                Projectile.rotation = MathHelper.Lerp(MathHelper.Pi / 6, MathHelper.Pi / 6 - MathHelper.Pi, Projectile.ai[1] / 15f);
+                StringLen = MathHelper.Lerp(0, ModifiedLength, Projectile.ai[1] / 15f);
                 if (Projectile.ai[1] >= 15)
                 {
                     Projectile.ai[1] = 0;
                     Phase = SwingBladePhase.Swing;
-                    //HasTrail = true;
 
                     for (int i = 0; i < 3; i++)
                     {
@@ -118,7 +110,6 @@ namespace WireBugMod.Projectiles.SBlade
             {
                 Projectile.ai[1]++;
                 Projectile.rotation -= MathHelper.TwoPi / 9.67f;
-                //DrawCenter = DrawCenter.RotatedBy(-MathHelper.Pi / 13f);
                 if (Projectile.ai[1] >= 120)
                 {
                     Projectile.ai[1] = 0;
@@ -131,14 +122,13 @@ namespace WireBugMod.Projectiles.SBlade
                 if (Projectile.ai[1] < 20)
                 {
                     Projectile.rotation -= MathHelper.Pi / 14f;
-                    StringLen = 100;
+                    StringLen = ModifiedLength;
                 }
                 else if (Projectile.ai[1] < 25)
                 {
                     float factor = (25 - Projectile.ai[1]) / 5f + 0.5f;
                     Projectile.rotation -= MathHelper.Pi / 5f * factor;
-                    StringLen = MathHelper.Lerp(100, 1, (Projectile.ai[1] - 20) / 5f);
-                    //DrawCenter *= 0.9f;
+                    StringLen = MathHelper.Lerp(ModifiedLength, 1, (Projectile.ai[1] - 20) / 5f);
                 }
                 else if (Projectile.ai[1] <= 50)
                 {
@@ -155,30 +145,6 @@ namespace WireBugMod.Projectiles.SBlade
                 Projectile.Kill();
                 return;
             }
-
-            /*
-            if (!HasTrail)
-            {
-                for (int i = 0; i < TrailCount; i++)
-                {
-                    OldRot[i] = Projectile.rotation;
-                    OldRadian[i] = StringLen;
-                    OldCenter[i] = DrawCenter;
-                }
-            }
-            else
-            {
-                for (int i = TrailCount - 1; i > 0; i--)
-                {
-                    OldRot[i] = OldRot[i - 1];
-                    OldRadian[i] = OldRadian[i - 1];
-                    OldCenter[i] = OldCenter[i - 1];
-                }
-                OldRot[0] = Projectile.rotation;
-                OldRadian[0] = StringLen;
-                OldCenter[0] = DrawCenter;
-            }
-            */
 
         }
 
@@ -200,36 +166,7 @@ namespace WireBugMod.Projectiles.SBlade
 
             Terraria.Utils.DrawLine(Main.spriteBatch, Projectile.Center, EndPos, Color.Cyan, Color.Cyan, 2);
 
-            /*
-            if (HasTrail)
-            {
-                Texture2D blob = ModContent.Request<Texture2D>("WireBugMod/Images/BlobGlow").Value;
-
-                List<CustomVertexInfo> vertexInfos = new();
-                for (int i = 0; i < TrailCount - 1; i++) 
-                {
-                    float Mix(float x1,float x2,float t)
-                    {
-                        return x1 * t + x2 * (1 - t);
-                    }
-                    Vector2 rotVec1 = OldCenter[i] + GetRotByDir(OldRot[i], owner.direction).ToRotationVector2() * (OldRadian[i] + 24);
-                    Vector2 rotVec2 = OldCenter[i] + GetRotByDir(OldRot[i], owner.direction).ToRotationVector2() * (OldRadian[i] + 16);
-                    Vector2 rotVec3 = OldCenter[i] + GetRotByDir(Mix(OldRot[i], OldRot[i + 1], 0.66f), owner.direction).ToRotationVector2() * (Mix(OldRadian[i], OldRadian[i + 1], 0.66f) + 24);
-                    Vector2 rotVec4 = OldCenter[i] + GetRotByDir(Mix(OldRot[i], OldRot[i + 1], 0.66f), owner.direction).ToRotationVector2() * (Mix(OldRadian[i], OldRadian[i + 1], 0.66f) + 16);
-                    Vector2 rotVec5 = OldCenter[i] + GetRotByDir(Mix(OldRot[i], OldRot[i + 1], 0.33f), owner.direction).ToRotationVector2() * (Mix(OldRadian[i], OldRadian[i + 1], 0.33f) + 24);
-                    Vector2 rotVec6 = OldCenter[i] + GetRotByDir(Mix(OldRot[i], OldRot[i + 1], 0.33f), owner.direction).ToRotationVector2() * (Mix(OldRadian[i], OldRadian[i + 1], 0.33f) + 16);
-
-                    vertexInfos.Add(new CustomVertexInfo(Projectile.Center + rotVec1, Color.White, new Vector3(1 - i / (float)(TrailCount - 1), 0, 1)));
-                    vertexInfos.Add(new CustomVertexInfo(Projectile.Center + rotVec2, Color.White, new Vector3(1 - i / (float)(TrailCount - 1), 1, 1)));
-                    vertexInfos.Add(new CustomVertexInfo(Projectile.Center + rotVec3, Color.White, new Vector3(1 - (i + 0.33f) / (TrailCount - 1), 0, 1)));
-                    vertexInfos.Add(new CustomVertexInfo(Projectile.Center + rotVec4, Color.White, new Vector3(1 - (i + 0.33f) / (TrailCount - 1), 1, 1)));
-                    vertexInfos.Add(new CustomVertexInfo(Projectile.Center + rotVec5, Color.White, new Vector3(1 - (i + 0.66f) / (TrailCount - 1), 0, 1)));
-                    vertexInfos.Add(new CustomVertexInfo(Projectile.Center + rotVec6, Color.White, new Vector3(1 - (i + 0.66f) / (TrailCount - 1), 1, 1)));
-                }
-                DrawUtils.DrawTrail(blob, vertexInfos, Main.spriteBatch, Color.Cyan, BlendState.Additive);
-            }
-            */
-
+            
             Main.spriteBatch.Draw(tex,
                 EndPos - Main.screenPosition,
                 null,

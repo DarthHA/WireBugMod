@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
+using WireBugMod.System;
 
 namespace WireBugMod.Utils
 {
@@ -133,5 +134,39 @@ namespace WireBugMod.Utils
             return Count >= 2;
         }
 
+        /// <summary>
+        /// 获取某技能对应按键是否刚刚按下
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static bool? GetSkillKeyJPStatus(this Player player,string name)
+        {
+            WireBugPlayer modplayer1 = player.GetModPlayer<WireBugPlayer>();
+            UIPlayer modplayer2 = player.GetModPlayer<UIPlayer>();
+            if (modplayer1.SwitchSkill)
+            {
+                if (name == modplayer2.SwitchSkillName1)
+                {
+                    return modplayer1.JustPressedWireSkill1;
+                }
+                else if (name == modplayer2.SwitchSkillName2)
+                {
+                    return modplayer1.JustPressedWireSkill2;
+                }
+            }
+            else
+            {
+                if (name == modplayer2.SkillName1)
+                {
+                    return modplayer1.JustPressedWireSkill1;
+                }
+                else if (name == modplayer2.SkillName2)
+                {
+                    return modplayer1.JustPressedWireSkill2;
+                }
+            }
+            return null;
+        }
     }
 }

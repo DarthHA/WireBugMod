@@ -64,13 +64,6 @@ namespace WireBugMod.Projectiles.SBlade
                 return;
             }
 
-            if (Main.rand.NextBool(12))
-            {
-                for (int i = 0; i < 2; i++)
-                {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
-                }
-            }
 
             Lighting.AddLight((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16, 1.5f, 1.5f, 1.5f);
 
@@ -110,6 +103,13 @@ namespace WireBugMod.Projectiles.SBlade
             }
             else if (Phase == PiercingBindPhase.Stay)
             {
+                if (Main.rand.NextBool(12))
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
+                    }
+                }
                 if (Target == -1 || !Main.npc[Target].active || !Main.npc[Target].CanBeChasedBy() || Main.npc[Target].Distance(owner.Center) > 1500)
                 {
                     Phase = PiercingBindPhase.Boom;
