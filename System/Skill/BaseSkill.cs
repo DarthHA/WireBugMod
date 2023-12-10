@@ -1,4 +1,6 @@
-﻿namespace WireBugMod.System.Skill
+﻿using System.Collections.Generic;
+
+namespace WireBugMod.System.Skill
 {
     public abstract class BaseSkill
     {
@@ -6,7 +8,6 @@
         /// 内部识别名
         /// </summary>
         public virtual string SkillName => "Skill";
-
 
         /// <summary>
         /// 翔虫冷却
@@ -23,7 +24,6 @@
         /// </summary>
         public virtual int Priority => 1;
 
-
         /// <summary>
         /// 不是冲刺虫技
         /// </summary>
@@ -32,7 +32,7 @@
         /// <summary>
         /// 使用的武器种类
         /// </summary>
-        public virtual WeaponType weaponType => WeaponType.None;
+        public virtual List<WeaponType> weaponType => new() { WeaponType.None };
 
         /// <summary>
         /// 技能触发条件

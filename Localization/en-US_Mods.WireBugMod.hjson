@@ -65,6 +65,9 @@ Projectiles: {
 	RushAndBoomProj.DisplayName: Wirebug
 	ReverseBlastProj.DisplayName: Wirebug
 	GroundSplitterProj.DisplayName: Wirebug
+	PiercingBindProj.DisplayName: Piercing Bind Proj
+	PiercingBindBugRoundingProj.DisplayName: Piercing Bind Bug Rounding Proj
+	PiercingBindBugRoundingProj2.DisplayName: Piercing Bind Bug Rounding Proj2
 }
 
 Skills: {
@@ -81,6 +84,7 @@ Skills: {
 	ReverseBlast: Reverse Blast
 	GroundSplitter: Ground Splitter
 	ShroudedVault: Shrouded Vault
+	PiercingBind: Piercing Bind
 }
 
 SkillInfos: {
@@ -155,6 +159,13 @@ SkillInfos: {
 		'''
 		A technique that uses a Wirebug to close in rapidly on the enemy, while instantly countering any attacks.
 		Perfect for a good start in battle, as you can jump straight to the heart of the action without fear of taking a hit.
+		'''
+	PiercingBind:
+		'''
+		An attack that drives a blade bound by Ironsilk into the target like a stake.
+		The blade remains connected to the hunter by Ironsilk, dealing additional slash damage to the same spot every time you attack.
+		The added damage accumulates over time, eventually unleashing massive damage.
+		Ends when a certain amount of time elapses, or when target becomes out of range.
 		'''
 }
 

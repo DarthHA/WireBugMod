@@ -65,6 +65,9 @@ Projectiles: {
 	RushAndBoomProj.DisplayName: 翔虫
 	ReverseBlastProj.DisplayName: 翔虫
 	GroundSplitterProj.DisplayName: 翔虫
+	// PiercingBindProj.DisplayName: Piercing Bind Proj
+	// PiercingBindBugRoundingProj.DisplayName: Piercing Bind Bug Rounding Proj
+	// PiercingBindBugRoundingProj2.DisplayName: Piercing Bind Bug Rounding Proj2
 }
 
 Skills: {
@@ -81,6 +84,7 @@ Skills: {
 	ReverseBlast: 暴风逆退
 	GroundSplitter: 地裂斩
 	ShroudedVault: 胧翔
+	PiercingBind: 铁虫斩丝
 }
 
 SkillInfos: {
@@ -154,6 +158,13 @@ SkillInfos: {
 		'''
 		使用翔虫迅速缩短距离，受到攻击后立刻转为反击的招式。
 		能接近敌人而不必担心被击中，适合用于接近怪物，用作发起进攻的起手招式。
+		'''
+	PiercingBind:
+		'''
+		将缠绕铁虫丝的刀刃打入猎物体内的招式。
+		打入的刀刃与猎人以丝线相连，一定时间内，猎人的每次攻击都会对打入刀刃的部位给予追加斩击。
+		给予追加斩击的次数越多，时间结束时造成的伤害也就越大。
+		经过一定时间，或与目标距离过远时结束。
 		'''
 }
 

@@ -197,10 +197,6 @@ namespace WireBugMod.System
         }
 
 
-        public override void OnHurt(Player.HurtInfo info)
-        {
-            JustHit = 2;
-        }
         public override void ModifyHurt(ref Player.HurtModifiers modifiers)
         {
             if (ActivatingGP)
@@ -217,6 +213,7 @@ namespace WireBugMod.System
 
         public override bool FreeDodge(Player.HurtInfo info)
         {
+            JustHit = 2;
             if (ShieldLevel == 3) return true;
             return false;
         }

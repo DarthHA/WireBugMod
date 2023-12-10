@@ -100,12 +100,6 @@ namespace WireBugMod.System
             */
             ReadJson();
 
-            SkillDictionary.Add(WeaponType.ShortBlade, new() { "Windmill", "MetsuShoryugeki" });
-
-            SkillDictionary.Add(WeaponType.GreatSword, new() { "HuntingEdge", "PowerSheathe", "SerenePose", "SakuraSlash" });
-
-            SkillDictionary.Add(WeaponType.Lance, new() { "SkywardThrust", "AnchorRage", "BulletBarrage", "GroundSplitter" });
-
             foreach (BaseSkill skill in SkillLoader.skills)
             {
                 if (skill.NotWireDash)
@@ -119,7 +113,6 @@ namespace WireBugMod.System
         {
             SkillList.Clear();
             WeaponDictionary.Clear();
-            SkillDictionary.Clear();
         }
 
         public static void WriteJson()

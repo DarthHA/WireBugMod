@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 using WireBugMod.Projectiles.SBlade;
@@ -20,8 +21,7 @@ namespace WireBugMod.Skills
         public override bool NotWireDash => true;
 
 
-
-        public override WeaponType weaponType => WeaponType.ShortBlade;
+        public override List<WeaponType> weaponType => new List<WeaponType>() { WeaponType.GreatSword, WeaponType.ShortBlade };
 
         public override bool OnUse(WireBugPlayer modplayer, int UseBug1, int UseBug2 = -1)
         {

@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameInput;

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿/*
+using Microsoft.Xna.Framework;
 using System;
 using Terraria;
 using Terraria.ModLoader;
@@ -9,6 +10,7 @@ using WireBugMod.Utils;
 
 namespace WireBugMod.Skills
 {
+    
     public class DBladeDash : BaseSkill
     {
         const float MinRange = 100;
@@ -57,4 +59,6 @@ namespace WireBugMod.Skills
         }
 
     }
+
 }
+    */

@@ -1,6 +1,4 @@
-﻿
-using System.Collections.Generic;
-using Terraria;
+﻿using Terraria;
 using WireBugMod.System;
 using WireBugMod.System.Skill;
 
@@ -49,9 +47,9 @@ namespace WireBugMod.Utils
         public static bool CheckTheSkillOfWeapon(BaseSkill skill, WeaponType weaponType)
         {
             if (weaponType == WeaponType.None) return false;
-            if (WeaponSkillData.SkillDictionary.TryGetValue(weaponType, out List<string> result))
+            if (skill.weaponType.Contains(weaponType))
             {
-                if (result.Contains(skill.SkillName)) return true;
+                return true;
             }
             return false;
         }

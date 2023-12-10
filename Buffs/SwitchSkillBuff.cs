@@ -2,7 +2,6 @@
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -44,7 +43,7 @@ namespace WireBugMod.Buffs
                 float alpha2 = 1 - progress;
                 float scale1 = 1 + (1 - progress) * 0.5f;
                 float scale2 = 1 + progress * 0.5f;
-                spriteBatch.Draw(texture1, drawParams.Position + texture1.Size() / 2, null, Color.White * alpha1, 0, texture1.Size() / 2, scale1 , SpriteEffects.None, 0);
+                spriteBatch.Draw(texture1, drawParams.Position + texture1.Size() / 2, null, Color.White * alpha1, 0, texture1.Size() / 2, scale1, SpriteEffects.None, 0);
                 spriteBatch.Draw(texture2, drawParams.Position + texture2.Size() / 2, null, Color.White * alpha2, 0, texture2.Size() / 2, scale2, SpriteEffects.None, 0);
             }
             else
