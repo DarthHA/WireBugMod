@@ -38,7 +38,7 @@ namespace WireBugMod.Projectiles
         public bool ActivatingGP = false;
 
         /// <summary>
-        /// 盾的强度,0为无盾，3为无敌盾
+        /// 盾的强度,0为无盾，3为无敌盾，仅在激活GP时生效
         /// </summary>
         public int ShieldLevel = 0;
 

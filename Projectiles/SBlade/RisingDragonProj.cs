@@ -119,11 +119,8 @@ namespace WireBugMod.Projectiles.SBlade
                     Hit = true;
                     owner.SetIFrame(120);
                     Vector2 Center = owner.Center + new Vector2(10 * owner.direction, 0);
-                    int protmp = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Center, Vector2.Zero, ModContent.ProjectileType<GPSpark>(), 0, 0, owner.whoAmI);
-                    Main.projectile[protmp].rotation = Main.rand.NextFloat() * MathHelper.TwoPi;
+                    GPSpark.Summon(Center);
                 }
-
-
 
                 if (Projectile.ai[1] >= timeNeeded)
                 {
@@ -166,8 +163,7 @@ namespace WireBugMod.Projectiles.SBlade
                     Hit = true;
                     owner.SetIFrame(120);
                     Vector2 Center = owner.Center + new Vector2(10 * owner.direction, 0);
-                    int protmp = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Center, Vector2.Zero, ModContent.ProjectileType<GPSpark>(), 0, 0, owner.whoAmI);
-                    Main.projectile[protmp].rotation = Main.rand.NextFloat() * MathHelper.TwoPi;
+                    GPSpark.Summon(Center);
                 }
 
                 if (Projectile.ai[1] >= 10)

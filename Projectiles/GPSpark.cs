@@ -66,5 +66,12 @@ namespace WireBugMod.Projectiles
             EasyDraw.AnotherDraw(BlendState.AlphaBlend);
             return false;
         }
+
+        public static int Summon(Vector2 Pos)
+        {
+            int protmp = Projectile.NewProjectile(Main.LocalPlayer.GetSource_Misc("GPSpark"), Pos, Vector2.Zero, ModContent.ProjectileType<GPSpark>(), 0, 0, Main.myPlayer);
+            Main.projectile[protmp].rotation = Main.rand.NextFloat() * MathHelper.TwoPi;
+            return protmp;
+        }
     }
 }

@@ -127,8 +127,7 @@ namespace WireBugMod.Projectiles.Lance
 
 
                     Vector2 Center = owner.Center + new Vector2(ShieldOffsetX * owner.direction, -3 * owner.gravDir);
-                    int protmp = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Center, Vector2.Zero, ModContent.ProjectileType<GPSpark>(), 0, 0, owner.whoAmI);
-                    Main.projectile[protmp].rotation = Main.rand.NextFloat() * MathHelper.TwoPi;
+                    GPSpark.Summon(Center);
                 }
 
 

@@ -436,7 +436,7 @@ namespace WireBugMod.UI
                     {
                         Cooldown = skill.Cooldown;
                         UseBugCount = skill.UseBugCount;
-                        foreach(WeaponType type in skill.weaponType)
+                        foreach (WeaponType type in skill.weaponType)
                         {
                             weaponlist += Language.GetTextValue("Mods.WireBugMod.WeaponType." + type.ToString()) + ",";
                         }
@@ -446,7 +446,7 @@ namespace WireBugMod.UI
                 SkillDesc = Language.GetTextValue("Mods.WireBugMod.SkillInfos." + SkillTitle) + "\n";
                 SkillDesc = Language.ActiveCulture.LegacyId == (int)GameCulture.CultureName.Chinese ? BreakLongStringForCN(SkillDesc, 35) : BreakLongString(SkillDesc, 35);
                 SkillDesc += string.Format(Language.GetTextValue("Mods.WireBugMod.SkillInfos.BugRecoverySpeed"), (Cooldown / 60f).ToString()) + "\n";
-                SkillDesc += string.Format(Language.GetTextValue("Mods.WireBugMod.SkillInfos.BugCost"), UseBugCount.ToString())+"\n";
+                SkillDesc += string.Format(Language.GetTextValue("Mods.WireBugMod.SkillInfos.BugCost"), UseBugCount.ToString()) + "\n";
                 SkillDesc += Language.GetTextValue("Mods.WireBugMod.SkillInfos.WeaponAvailable") + weaponlist;
                 SkillTitle = Language.GetTextValue("Mods.WireBugMod.Skills." + SkillTitle);
             }

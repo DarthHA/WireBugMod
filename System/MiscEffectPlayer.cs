@@ -4,6 +4,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WireBugMod.Projectiles;
+using static Humanizer.In;
 
 namespace WireBugMod.System
 {
@@ -66,9 +67,11 @@ namespace WireBugMod.System
             if (drawinfo.drawPlayer.TryGetModPlayer(out MiscEffectPlayer result))
             {
                 drawinfo.drawPlayer.bodyRotation += result.ShieldRotation * drawinfo.drawPlayer.direction;
+                drawinfo.drawPlayer.fullRotationOrigin = drawinfo.drawPlayer.Size / 2f;
                 drawinfo.Position += new Vector2(result.ShieldOffset.X * drawinfo.drawPlayer.direction, result.ShieldOffset.Y);
                 orig.Invoke(ref drawinfo);
                 drawinfo.drawPlayer.bodyRotation -= result.ShieldRotation * drawinfo.drawPlayer.direction;
+                drawinfo.drawPlayer.fullRotationOrigin = drawinfo.drawPlayer.Size / 2f;
                 drawinfo.Position -= new Vector2(result.ShieldOffset.X * drawinfo.drawPlayer.direction, result.ShieldOffset.Y);
                 return;
             }
@@ -241,7 +244,7 @@ namespace WireBugMod.System
                     }
                 }
             }
-            if(!DisableMeleeEffect && OldDisableMeleeEffect)        //防止尾刀出问题
+            if (!DisableMeleeEffect && OldDisableMeleeEffect)        //防止尾刀出问题
             {
                 Player.itemTime = 0;
                 Player.itemAnimation = 0;

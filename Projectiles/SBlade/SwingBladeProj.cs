@@ -1,10 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.ComponentModel.DataAnnotations;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using WireBugMod.System;
 using WireBugMod.Utils;
 
 namespace WireBugMod.Projectiles.SBlade
@@ -166,7 +164,7 @@ namespace WireBugMod.Projectiles.SBlade
 
             Terraria.Utils.DrawLine(Main.spriteBatch, Projectile.Center, EndPos, Color.Cyan, Color.Cyan, 2);
 
-            
+
             Main.spriteBatch.Draw(tex,
                 EndPos - Main.screenPosition,
                 null,

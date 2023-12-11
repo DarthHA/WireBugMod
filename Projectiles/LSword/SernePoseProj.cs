@@ -124,8 +124,7 @@ namespace WireBugMod.Projectiles.LSword
                     ActivatingGP = false;
                     ShieldLevel = 0;
                     Vector2 Center = owner.Center + new Vector2(10 * owner.direction, 0 * owner.gravDir);
-                    int protmp = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Center, Vector2.Zero, ModContent.ProjectileType<GPSpark>(), 0, 0, owner.whoAmI);
-                    Main.projectile[protmp].rotation = Main.rand.NextFloat() * MathHelper.TwoPi;
+                    GPSpark.Summon(Center);
                     SummonSword(owner.HeldItem.type, (Main.MouseWorld - owner.Center).ToRotation(), owner.GetWeaponDamage() * 5, owner.GetWeaponKnockback(), 999);
                     Main.projectile[SwordProj].friendly = false;
                 }

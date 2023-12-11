@@ -140,7 +140,7 @@ namespace WireBugMod.Utils
         /// <param name="player"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static bool? GetSkillKeyJPStatus(this Player player,string name)
+        public static bool? GetSkillKeyJPStatus(this Player player, string name)
         {
             WireBugPlayer modplayer1 = player.GetModPlayer<WireBugPlayer>();
             UIPlayer modplayer2 = player.GetModPlayer<UIPlayer>();

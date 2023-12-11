@@ -43,7 +43,7 @@ Projectiles: {
 	LanceDownProj.DisplayName: Wirebug
 	WireDashProj.DisplayName: Wirebug
 	LanceGuardProj.DisplayName: Wirebug
-	LanceBugRoundingProj.DisplayName: Silkbind
+	LanceBugRoundingProj.DisplayName: Ironsilk
 	LanceWeaponProj.DisplayName: Lance
 	GPSpark.DisplayName: GP Effect
 	SlashDownProj.DisplayName: Wirebug
@@ -56,7 +56,7 @@ Projectiles: {
 	SakuraBombProj.DisplayName: Silkbind Sakura Slash
 	SlashProj.DisplayName: Slash
 	SwingBladeProj.DisplayName: Short Blade
-	SwingBladeRoundingProj.DisplayName: Silkbind
+	SwingBladeRoundingProj.DisplayName: Ironsilk
 	RisingDragonProj.DisplayName: Wirebug
 	SBladeWeaponProj.DisplayName: Short Blade
 	RisingDragonWeaponProj.DisplayName: Wirebug
@@ -65,9 +65,10 @@ Projectiles: {
 	RushAndBoomProj.DisplayName: Wirebug
 	ReverseBlastProj.DisplayName: Wirebug
 	GroundSplitterProj.DisplayName: Wirebug
-	PiercingBindProj.DisplayName: Silkbind
-	PiercingBindBugRoundingProj.DisplayName: Silkbind
-	PiercingBindBugRoundingProj2.DisplayName: Silkbind
+	PiercingBindProj.DisplayName: Ironsilk
+	PiercingBindBugRoundingProj.DisplayName: Ironsilk
+	PiercingBindBugRoundingProj2.DisplayName: Ironsilk
+	ShieldBashProj.DisplayName: Shield Bash Proj
 }
 
 WeaponType: {
@@ -96,6 +97,8 @@ Skills: {
 	GroundSplitter: Ground Splitter
 	ShroudedVault: Shrouded Vault
 	PiercingBind: Piercing Bind
+	ShieldBash: Shield Bash
+	AdamantChargedSlash: Adamant Charged Slash
 }
 
 SkillInfos: {
@@ -178,6 +181,17 @@ SkillInfos: {
 		The blade remains connected to the hunter by Ironsilk, dealing additional slash damage to the same spot every time you attack.
 		The added damage accumulates over time, eventually unleashing massive damage.
 		Ends when a certain amount of time elapses, or when target becomes out of range.
+		'''
+	ShieldBash:
+		'''
+		A combined offensive and defensive move using a Wirebug to dash forward with your shield raised.
+		If the attack connects with a monster, you can instantly follow up with a variety of attacks.
+		If timed right, you can even parry an incoming attack and then continue your assault.
+		'''
+	AdamantChargedSlash:
+		'''
+		A technique using a Wirebug to dash forward, and deliver a Strong Charged Slash.
+		Also allows you to withstand knockdown attacks by hardening your body as you dash forth.
 		'''
 }
 

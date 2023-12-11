@@ -4,7 +4,6 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using WireBugMod.System;
 using WireBugMod.Utils;
 
 namespace WireBugMod.Projectiles.Lance

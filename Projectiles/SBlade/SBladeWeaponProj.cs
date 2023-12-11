@@ -1,14 +1,14 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 using Terraria.ModLoader;
 using WireBugMod.Utils;
 
-namespace WireBugMod.Projectiles.GSword
+namespace WireBugMod.Projectiles.SBlade
 {
 
-    public class GSwordWeaponProj : ModProjectile
+    public class SBladeWeaponProj : ModProjectile
     {
         public int ItemType = -1;
 
@@ -118,6 +118,7 @@ namespace WireBugMod.Projectiles.GSword
 
             return false;
         }
+
 
     }
 }

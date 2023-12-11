@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+Ôªøusing Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -7,37 +7,38 @@ using Terraria.ModLoader;
 using WireBugMod.System;
 using WireBugMod.Utils;
 
-namespace WireBugMod.Projectiles
+namespace WireBugMod.Projectiles.SBlade
 {
-    public enum WireDashPhase
+    public enum ShieldBashPhase
     {
         Default,
         Shoot,
         Drag,
-        Hover,
+        Pause,
     }
-    public class WireDashProj : BaseSkillProj
+    public class ShieldBashProj : BaseSkillProj
     {
         public Vector2 TargetPos = Vector2.Zero;
         public Vector2 StartPos = Vector2.Zero;
         public bool Connected = true;
-        public bool Disappear = false;
-        public bool BecomeTrail = false;
 
-        public const float HoverY = 100;
+        public const float HoverY = 50;
         public const float BugWireOffset = 10;
         public const float ShootSpeed = 20;
-        public const float DragSpeed = 20;
+        public const float DragSpeed = 30;
         public const float ReturnSpeed = 20;
 
-        public WireDashPhase Phase = WireDashPhase.Default;
+        private int SwordProj = -1;
+        private bool Hit = false;
+
+        public ShieldBashPhase Phase = ShieldBashPhase.Default;
         public override string Texture => "WireBugMod/Images/PlaceHolder";
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 3;
             ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 2000;
         }
-        public override void SetDefaults()
+        public override void SetDefaults()              //Ëøô‰∏™ÂºπÂπïÂ∏¶‰º§ÂÆ≥ÁöÑ
         {
             Projectile.width = 10;
             Projectile.height = 10;
@@ -46,11 +47,17 @@ namespace WireBugMod.Projectiles
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
             Projectile.netImportant = true;
+
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Melee;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10;
         }
         public override void AI()
         {
             Player owner = Main.player[Projectile.owner];
-            if (owner.IsDead())
+
+            if (owner.IsDead() || !owner.hasRaisableShield)
             {
                 Projectile.Kill();
                 return;
@@ -72,18 +79,29 @@ namespace WireBugMod.Projectiles
 
             Lighting.AddLight((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16, 1.5f, 1.5f, 1.5f);
 
-            if (Phase == WireDashPhase.Shoot)           //10÷°
+            if (Phase == ShieldBashPhase.Shoot)           //10Â∏ß
             {
                 for (int i = 0; i < 2; i++)
                 {
                     GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
-                Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
+                if (Projectile.ai[1] == 1)
+                {
+                    SummonSword(owner.HeldItem.type, 0, 0, 0);
+                }
+                float TargetRot = (TargetPos - StartPos).ToRotation();
+                Main.projectile[SwordProj].rotation = PlayerUtils.GetRotationByDirection(TargetRot, owner.direction);
+
+                Vector2 HoverPos = TargetPos + Vector2.Normalize(TargetPos - StartPos) * HoverY;
                 int timeNeeded = Math.Clamp((int)((StartPos - HoverPos).Length() / ShootSpeed), 1, 10);
                 Projectile.Center = Vector2.Lerp(StartPos, HoverPos, Projectile.ai[1] / timeNeeded);
                 Projectile.spriteDirection = Math.Sign(HoverPos.X - StartPos.X);
                 owner.direction = Math.Sign(TargetPos.X - owner.Center.X);
+
+                float CurrentRot = MathHelper.Lerp(0, PlayerUtils.GetRotationByDirection(TargetRot, owner.direction), Projectile.ai[1] / timeNeeded);
+                owner.GetModPlayer<MiscEffectPlayer>().ShieldRotation = CurrentRot;
+
                 if (Projectile.ai[1] >= timeNeeded)
                 {
                     for (int i = 0; i < 20; i++)
@@ -92,59 +110,58 @@ namespace WireBugMod.Projectiles
                     }
                     StartPos = owner.Center;
                     Projectile.Center = HoverPos;
-                    Phase = WireDashPhase.Drag;
+                    Phase = ShieldBashPhase.Drag;
                     Projectile.ai[1] = 0;
+                    owner.GetModPlayer<MiscEffectPlayer>().ShieldRotation = PlayerUtils.GetRotationByDirection(TargetRot, owner.direction);
+                    ActivatingGP = true;
                 }
             }
-            else if (Phase == WireDashPhase.Drag)      //¿≠≥∂£¨ø…≈……˙–¸π“
+            else if (Phase == ShieldBashPhase.Drag)      //ÊãâÊâØÔºåÂèØÊ¥æÁîüÊÇ¨ÊåÇ
             {
-                for (int i = 0; i < 2; i++)
-                {
-                    GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
-                }
                 Projectile.ai[1]++;
-                Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
+                Vector2 HoverPos = TargetPos + Vector2.Normalize(TargetPos - StartPos) * HoverY;
                 Projectile.Center = HoverPos;
                 int timeNeeded = Math.Clamp((int)((StartPos - TargetPos).Length() / DragSpeed), 1, 114514);
-                //owner.Center = Vector2.Lerp(StartPos, TargetPos, Projectile.ai[1] / timeNeeded);         Œª“∆“∆∂Ø
+                //owner.Center = Vector2.Lerp(StartPos, TargetPos, Projectile.ai[1] / timeNeeded);         ‰ΩçÁßªÁßªÂä®
                 owner.velocity = Vector2.Normalize(TargetPos - owner.Center) * (DragSpeed - 1);
                 owner.position += Vector2.Normalize(owner.velocity);
                 owner.direction = Math.Sign(TargetPos.X - owner.Center.X);
 
+                float TargetRot = (TargetPos - StartPos).ToRotation();
+                owner.GetModPlayer<MiscEffectPlayer>().ShieldRotation = PlayerUtils.GetRotationByDirection(TargetRot, owner.direction);
+                float DeltaRot = MathHelper.Pi / 6 * 5 / Math.Min(5, timeNeeded);
+                if (Projectile.ai[1] <= 5)
+                {
+                    Main.projectile[SwordProj].rotation += DeltaRot;
+                }
+
+                if (owner.GetModPlayer<MiscEffectPlayer>().JustHit > 0 && !Hit)
+                {
+                    Hit = true;
+                    GPSpark.Summon(owner.Center + TargetRot.ToRotationVector2() * 10);
+                    owner.SetIFrame(60);
+                }
+
                 if (Projectile.ai[1] >= timeNeeded || owner.Distance(TargetPos) <= DragSpeed / 1.5f)
                 {
-                    if (!owner.GetModPlayer<WireBugPlayer>().PressingWireDash)
-                    {
-                        owner.velocity = Vector2.Normalize(TargetPos - StartPos) * DragSpeed;
-                        owner.SetPlayerFallStart(StartPos);
-                        ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
-                        Projectile.Kill();
-                        return;
-                    }
-                    else
-                    {
-                        owner.velocity.Y = 0;
-                        owner.velocity.X = Math.Clamp(owner.velocity.X, -5, 5);
-                        owner.SetPlayerFallStart(StartPos);
-                        Projectile.ai[1] = 0;
-                        Phase = WireDashPhase.Hover;
-                        LockAllBug = true;
-                    }
+                    owner.velocity = Vector2.Normalize(TargetPos - StartPos) * 5;
+                    owner.SetPlayerFallStart(StartPos);
+                    Connected = false;
+                    Phase = ShieldBashPhase.Pause;
+                    Projectile.ai[1] = 0;
+                    ActivatingGP = false;
                 }
             }
-            else if (Phase == WireDashPhase.Hover)       //–¸π“
+            else if (Phase == ShieldBashPhase.Pause)      //ÊãâÊâØÔºåÂèØÊ¥æÁîüÊÇ¨ÊåÇ
             {
-                float dist = Math.Clamp(owner.Distance(Projectile.Center), 0, HoverY);
-                owner.Center = Projectile.Center + Vector2.Normalize(owner.Center - Projectile.Center) * dist;  //Œª÷√À¯∂®
+                Projectile.ai[1]++;
 
-                Vector2 Unit = Vector2.Normalize(Projectile.Center - owner.Center);//ÀŸ∂»À¯∂®
-                if (PlayerUtils.PointMulti(Unit, owner.velocity) < 0)  //¥Ê‘⁄∑¥œÚÀŸ∂»∑÷¡ø
-                {
-                    owner.velocity -= Unit * PlayerUtils.PointMulti(Unit, owner.velocity);
-                }
+                float TargetRot = (TargetPos - StartPos).ToRotation();
+                owner.GetModPlayer<MiscEffectPlayer>().ShieldRotation = PlayerUtils.GetRotationByDirection(TargetRot, owner.direction);
 
-                if (!owner.GetModPlayer<WireBugPlayer>().PressingWireDash)
+                if (Projectile.ai[1] > 20)
                 {
+                    KillSword();
                     ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
@@ -156,10 +173,11 @@ namespace WireBugMod.Projectiles
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Connected)     //ªÊ÷∆≥ÊÀø
+
+            if (Connected)     //ÁªòÂà∂Ëô´‰∏ù
             {
                 float percentage = 0;
-                if (Phase == WireDashPhase.Shoot)
+                if (Phase == ShieldBashPhase.Shoot)
                 {
                     Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
                     percentage = Projectile.Distance(HoverPos) / HoverPos.Distance(StartPos);
@@ -167,47 +185,6 @@ namespace WireBugMod.Projectiles
                 DrawUtils.DrawWire(Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, BugWireOffset), percentage, Color.Cyan, 0.01f);
                 //Terraria.Utils.DrawLine(Main.spriteBatch, Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, 5), Color.Cyan, Color.Cyan, 2);
             }
-
-            if (BecomeTrail)        //ªÊ÷∆ÕœŒ≤
-            {
-                EasyDraw.AnotherDraw(BlendState.Additive);
-                Texture2D texTrail = ModContent.Request<Texture2D>("WireBugMod/Images/BlobGlow").Value;
-                Vector2 origin = new Vector2(texTrail.Width * 0.75f, texTrail.Height / 2f);
-                Vector2 scale = new Vector2(Projectile.scale * 0.3f, Projectile.scale * 0.2f);
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.Cyan * 0.75f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale,
-                    SpriteEffects.None,
-                    0);
-
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.LightBlue * 0.5f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale * 0.75f,
-                    SpriteEffects.None,
-                    0);
-
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.White * 0.75f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale * 0.6f,
-                    SpriteEffects.None,
-                    0);
-                EasyDraw.AnotherDraw(BlendState.AlphaBlend);
-                return false;
-            }
-
-
 
             Texture2D tex = ModContent.Request<Texture2D>("WireBugMod/Images/WireBug").Value;
             Texture2D glow = ModContent.Request<Texture2D>("WireBugMod/Images/WireBug_Glow").Value;
@@ -246,6 +223,29 @@ namespace WireBugMod.Projectiles
             dust.position = Pos;
             dust.noGravity = true;
             dust.scale = scale;
+        }
+
+        private void SummonSword(int type, float rot, int damage, float kb, int hitCooldown = 999)
+        {
+            if (SwordProj != -1) KillSword();
+            Player owner = Main.player[Projectile.owner];
+            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0), owner.Center, Vector2.Zero, ModContent.ProjectileType<SBladeWeaponProj>(), damage, kb, owner.whoAmI);
+            if (protmp >= 0)
+            {
+                Main.projectile[protmp].rotation = rot;
+                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
+                SBladeWeaponProj modproj = Main.projectile[protmp].ModProjectile as SBladeWeaponProj;
+                modproj.ProjOwner = Projectile.whoAmI;
+                modproj.ItemType = type;
+                SwordProj = protmp;
+            }
+        }
+
+        private void KillSword()
+        {
+            if (SwordProj == -1) return;
+            Main.projectile[SwordProj].Kill();
+            SwordProj = -1;
         }
     }
 }

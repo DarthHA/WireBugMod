@@ -68,6 +68,7 @@ Projectiles: {
 	PiercingBindProj.DisplayName: 铁虫丝
 	PiercingBindBugRoundingProj.DisplayName: 铁虫丝
 	PiercingBindBugRoundingProj2.DisplayName: 铁虫丝
+	// ShieldBashProj.DisplayName: Shield Bash Proj
 }
 
 WeaponType: {
@@ -96,6 +97,8 @@ Skills: {
 	GroundSplitter: 地裂斩
 	ShroudedVault: 胧翔
 	PiercingBind: 铁虫斩丝
+	ShieldBash: 盾牌猛击
+	AdamantChargedSlash: 金刚蓄力斩
 }
 
 SkillInfos: {
@@ -177,6 +180,17 @@ SkillInfos: {
 		打入的刀刃与猎人以丝线相连，一定时间内，猎人的每次攻击都会对打入刀刃的部位给予追加斩击。
 		给予追加斩击的次数越多，时间结束时造成的伤害也就越大。
 		经过一定时间，或与目标距离过远时结束。
+		'''
+	ShieldBash:
+		'''
+		攻守兼备的招式，可以使用翔虫，架起盾牌向前方猛冲。
+		猛冲时若撞到怪物后会就此停下，也可以立即进行下一次攻击。
+		此外，受到攻击也可用盾防住。
+		'''
+	AdamantChargedSlash:
+		'''
+		使用翔虫，压低身体向前方迅速踏步，并释放强蓄力斩的招式。
+		踏步时全身紧绷，甚至能承受住击飞攻击。
 		'''
 }
 
