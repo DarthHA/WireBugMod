@@ -7,7 +7,6 @@ using WireBugMod.Utils;
 
 namespace WireBugMod.Projectiles.GSword
 {
-
     public class GSwordWeaponProj : ModProjectile
     {
         public int ItemType = -1;

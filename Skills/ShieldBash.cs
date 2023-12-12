@@ -12,7 +12,7 @@ namespace WireBugMod.Skills
 {
     public class ShieldBash : BaseSkill
     {
-        const float MinRange = 100;
+        const float MinRange = 150;
         const float MaxRange = 500;
 
 
@@ -51,7 +51,6 @@ namespace WireBugMod.Skills
                 modproj.UsedBugID2 = UseBug2;
                 modproj.ShieldRaise = true;
                 modproj.DisableMeleeEffect = true;
-                modproj.ShieldLevel = 2;
 
                 return true;
             }

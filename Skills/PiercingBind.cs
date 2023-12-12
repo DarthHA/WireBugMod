@@ -89,8 +89,7 @@ namespace WireBugMod.Skills
                 {
                     player.StrikeNPCDirect(target,
                         target.CalculateHitInfo(hit.Damage / 2, hit.HitDirection, false, 0, hit.DamageType, false, player.luck));
-                    int protmp = Projectile.NewProjectile(Main.LocalPlayer.GetSource_FromThis(), KnifePos, Vector2.Zero, ModContent.ProjectileType<SlashProj>(), 0, 0, Main.myPlayer);
-                    Main.projectile[protmp].rotation = Main.rand.NextFloat() * MathHelper.TwoPi;
+                    SlashProj.Summon(player, KnifePos, 0, 0);
                 }
             }
         }

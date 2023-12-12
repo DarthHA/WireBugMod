@@ -68,7 +68,9 @@ Projectiles: {
 	PiercingBindProj.DisplayName: 铁虫丝
 	PiercingBindBugRoundingProj.DisplayName: 铁虫丝
 	PiercingBindBugRoundingProj2.DisplayName: 铁虫丝
-	// ShieldBashProj.DisplayName: Shield Bash Proj
+	ShieldBashProj.DisplayName: 翔虫
+	// ACSlashProj.DisplayName: A C Slash Proj
+	// ACSBugRoundingProj.DisplayName: A C S Bug Rounding Proj
 }
 
 WeaponType: {

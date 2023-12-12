@@ -34,7 +34,7 @@ namespace WireBugMod.Projectiles
 
         public static void Summon(Player player, Vector2 Pos, int width, int height, int dmg, float kb)
         {
-            int protmp = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, 0), Pos, Vector2.Zero, ModContent.ProjectileType<DamageProj>(), dmg, kb, player.whoAmI);
+            int protmp = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, 0, "WireBug"), Pos, Vector2.Zero, ModContent.ProjectileType<DamageProj>(), dmg, kb, player.whoAmI);
             if (protmp >= 0)
             {
                 Main.projectile[protmp].width = width;

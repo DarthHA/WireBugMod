@@ -65,5 +65,12 @@ namespace WireBugMod.Projectiles
             EasyDraw.AnotherDraw(BlendState.AlphaBlend);
             return false;
         }
+
+        public static int Summon(Player player, Vector2 Pos, int dmg, float kb)
+        {
+            int protmp = Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(player.HeldItem, 0, "WireBug"), Pos, Vector2.Zero, ModContent.ProjectileType<SlashProj>(), dmg, kb, player.whoAmI);
+            Main.projectile[protmp].rotation = Main.rand.NextFloat() * MathHelper.TwoPi;
+            return protmp;
+        }
     }
 }

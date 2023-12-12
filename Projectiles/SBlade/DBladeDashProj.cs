@@ -98,7 +98,7 @@
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                    GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
                 Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
@@ -222,7 +222,7 @@
         {
             if (SwordProj != -1) KillSword();
             Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0), owner.Center, Vector2.Zero, ModContent.ProjectileType<BackGSwordProj>(), 0, 0, owner.whoAmI);
+            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0,"WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<BackGSwordProj>(), 0, 0, owner.whoAmI);
             if (protmp >= 0)
             {
                 BackGSwordProj modproj = Main.projectile[protmp].ModProjectile as BackGSwordProj;

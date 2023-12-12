@@ -1,36 +1,37 @@
-using Microsoft.Xna.Framework;
+Ôªøusing Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WireBugMod.Projectiles.SBlade;
 using WireBugMod.Utils;
 
 namespace WireBugMod.Projectiles.GSword
 {
-    public enum AtkPowerUpPhase
+    public enum ACSlashPhase
     {
         Default,
         Shoot,
         Drag,
-        PowerUp,
+        Charge,
+        Slash,
+        Pause
     }
-    public class AtkPowerUpProj : BaseSkillProj
+    public class ACSlashProj : BaseSkillProj
     {
         public Vector2 TargetPos = Vector2.Zero;
         public Vector2 StartPos = Vector2.Zero;
         public bool Connected = true;
-        public bool BecomeTrail = false;
 
         public const float HoverY = 50;
         public const float BugWireOffset = 10;
         public const float ShootSpeed = 20;
-        public const float DragSpeed = 20;
-        public const float ReturnSpeed = 20;
+        public const float DragSpeed = 10;
 
         private int SwordProj = -1;
 
-        public AtkPowerUpPhase Phase = AtkPowerUpPhase.Default;
+        public ACSlashPhase Phase = ACSlashPhase.Default;
         public override string Texture => "WireBugMod/Images/PlaceHolder";
         public override void SetStaticDefaults()
         {
@@ -50,7 +51,6 @@ namespace WireBugMod.Projectiles.GSword
         public override void AI()
         {
             Player owner = Main.player[Projectile.owner];
-
             if (owner.IsDead())
             {
                 Projectile.Kill();
@@ -73,22 +73,38 @@ namespace WireBugMod.Projectiles.GSword
 
             Lighting.AddLight((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16, 1.5f, 1.5f, 1.5f);
 
-            if (Phase == AtkPowerUpPhase.Shoot)           //10÷°
+            if (Phase == ACSlashPhase.Shoot)           //10Â∏ß
             {
                 for (int i = 0; i < 2; i++)
                 {
                     GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
+
                 if (Projectile.ai[1] == 1)
                 {
-                    SummonSword(owner.HeldItem.type, 0);
+                    SummonSword(owner.HeldItem.type, -MathHelper.Pi / 4f, 0, 0);
+                    for (int i = 0; i < 7; i++)
+                    {
+                        float radian = 40 + Main.rand.Next(0, 30);
+                        float inip = Main.rand.NextFloat() * MathHelper.TwoPi;
+                        float vel = Main.rand.NextFloat() * 0.6f + 0.6f;
+                        float scale = Main.rand.NextFloat() * 2f + 2f;
+                        float rot2 = 0.45f - 0.15f * i;
+                        Vector2 OffSet = new(0, Main.rand.Next(-12, 12));
+                        ACSBugRoundingProj.SummonProj(Projectile.whoAmI, Projectile.Center, OffSet, Color.Cyan, radian, rot2, inip, 0.15f, vel, scale, Main.rand.Next(2) * 2 - 1);
+                    }
                 }
-                Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
+
+                float TargetRot = (TargetPos - StartPos).ToRotation();
+                Vector2 HoverPos = TargetPos + TargetRot.ToRotationVector2() * HoverY;
                 int timeNeeded = Math.Clamp((int)((StartPos - HoverPos).Length() / ShootSpeed), 1, 10);
                 Projectile.Center = Vector2.Lerp(StartPos, HoverPos, Projectile.ai[1] / timeNeeded);
                 Projectile.spriteDirection = Math.Sign(HoverPos.X - StartPos.X);
                 owner.direction = Math.Sign(TargetPos.X - owner.Center.X);
+
+                Main.projectile[SwordProj].rotation = MathHelper.Lerp(-MathHelper.Pi / 4f, -MathHelper.Pi / 4 * 5, Projectile.ai[1] / timeNeeded);
+
                 if (Projectile.ai[1] >= timeNeeded)
                 {
                     for (int i = 0; i < 20; i++)
@@ -97,30 +113,95 @@ namespace WireBugMod.Projectiles.GSword
                     }
                     StartPos = owner.Center;
                     Projectile.Center = HoverPos;
-                    Phase = AtkPowerUpPhase.Drag;
+                    Phase = ACSlashPhase.Drag;
                     Projectile.ai[1] = 0;
+                    Main.projectile[SwordProj].rotation = -MathHelper.Pi / 4f * 5f;
                 }
             }
-            else if (Phase == AtkPowerUpPhase.Drag)      //¿≠≥∂£¨ø…≈……˙–¸π“
+            else if (Phase == ACSlashPhase.Drag)      //ÊãâÊâØ
             {
                 for (int i = 0; i < 2; i++)
                 {
                     GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
-                Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
+                float TargetRot = (TargetPos - StartPos).ToRotation();
+                Vector2 HoverPos = TargetPos + TargetRot.ToRotationVector2() * HoverY;
                 Projectile.Center = HoverPos;
                 int timeNeeded = Math.Clamp((int)((StartPos - TargetPos).Length() / DragSpeed), 1, 114514);
-                //owner.Center = Vector2.Lerp(StartPos, TargetPos, Projectile.ai[1] / timeNeeded);         Œª“∆“∆∂Ø
+                //owner.Center = Vector2.Lerp(StartPos, TargetPos, Projectile.ai[1] / timeNeeded);         ‰ΩçÁßªÁßªÂä®
                 owner.velocity = Vector2.Normalize(TargetPos - owner.Center) * (DragSpeed - 1);
-                owner.position += Vector2.Normalize(owner.velocity);
+                if (!Collision.SolidCollision(owner.position + Vector2.Normalize(owner.velocity), owner.width, owner.height))
+                {
+                    owner.position += Vector2.Normalize(owner.velocity);
+                }
                 owner.direction = Math.Sign(TargetPos.X - owner.Center.X);
+
+                if (Projectile.ai[1] < (timeNeeded * 0.25f))
+                {
+                    Main.projectile[SwordProj].rotation = MathHelper.Lerp(-MathHelper.Pi / 4f * 5, -MathHelper.Pi / 4 * 3, Projectile.ai[1] / (timeNeeded * 0.25f));
+                }
+                else
+                {
+                    Main.projectile[SwordProj].rotation = -MathHelper.Pi / 4 * 3;
+                }
 
                 if (Projectile.ai[1] >= timeNeeded || owner.Distance(TargetPos) <= DragSpeed / 1.5f)
                 {
-                    owner.velocity = Vector2.Normalize(TargetPos - StartPos) * 10;
+                    owner.velocity.X = owner.direction * 5;
+                    Projectile.ai[1] = 0;
+                    Phase = ACSlashPhase.Charge;
                     owner.SetPlayerFallStart(StartPos);
-                    SummonSword(owner.HeldItem.type, 1);
+                    Connected = false;
+
+                }
+            }
+            else if (Phase == ACSlashPhase.Charge)
+            {
+                Projectile.ai[1]++;
+                if (Projectile.ai[1] < 30)
+                {
+                    Main.projectile[SwordProj].rotation = MathHelper.Lerp(-MathHelper.Pi / 4f * 3, -MathHelper.Pi / 4f * 5, Projectile.ai[1] / 30f);
+                }
+                else
+                {
+                    Main.projectile[SwordProj].rotation = -MathHelper.Pi / 4f * 5;
+                }
+
+                if (Projectile.ai[1] > 40)
+                {
+                    if (Projectile.ai[1] > 120 || !owner.PressLeftInGame())
+                    {
+                        SummonSword(owner.HeldItem.type, -MathHelper.Pi / 4f * 5, owner.GetWeaponDamage() * 10, owner.GetWeaponKnockback(), 999);
+                        Phase = ACSlashPhase.Slash;
+                        Projectile.ai[1] = 0;
+
+                        foreach (Projectile proj in Main.projectile)
+                        {
+                            if (proj.active && proj.type == ModContent.ProjectileType<ACSBugRoundingProj>() && proj.localAI[0] == Projectile.whoAmI + 1)
+                            {
+                                proj.localAI[1] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (Phase == ACSlashPhase.Slash)
+            {
+                Projectile.ai[1]++;
+                Main.projectile[SwordProj].rotation = MathHelper.Lerp(-MathHelper.Pi / 4f * 5, MathHelper.Pi / 12f, (float)Math.Pow(Projectile.ai[1] / 15f, 2));
+                if (Projectile.ai[1] >= 15)
+                {
+                    Phase = ACSlashPhase.Pause;
+                    Projectile.ai[1] = 0;
+                }
+            }
+            else if (Phase == ACSlashPhase.Pause)
+            {
+                Projectile.ai[1]++;
+                if (Projectile.ai[1] > 20)
+                {
+                    KillSword();
                     ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
@@ -133,57 +214,18 @@ namespace WireBugMod.Projectiles.GSword
         public override bool PreDraw(ref Color lightColor)
         {
 
-            if (Connected)     //ªÊ÷∆≥ÊÀø
+            if (Connected)     //ÁªòÂà∂Ëô´‰∏ù
             {
                 float percentage = 0;
-                if (Phase == AtkPowerUpPhase.Shoot)
+                if (Phase == ACSlashPhase.Shoot)
                 {
-                    Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
+                    float TargetRot = (TargetPos - StartPos).ToRotation();
+                    Vector2 HoverPos = TargetPos + TargetRot.ToRotationVector2() * HoverY;
                     percentage = Projectile.Distance(HoverPos) / HoverPos.Distance(StartPos);
                 }
                 DrawUtils.DrawWire(Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, BugWireOffset), percentage, Color.Cyan, 0.01f);
                 //Terraria.Utils.DrawLine(Main.spriteBatch, Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, 5), Color.Cyan, Color.Cyan, 2);
             }
-
-            if (BecomeTrail)        //ªÊ÷∆ÕœŒ≤
-            {
-                EasyDraw.AnotherDraw(BlendState.Additive);
-                Texture2D texTrail = ModContent.Request<Texture2D>("WireBugMod/Images/BlobGlow").Value;
-                Vector2 origin = new Vector2(texTrail.Width * 0.75f, texTrail.Height / 2f);
-                Vector2 scale = new Vector2(Projectile.scale * 0.3f, Projectile.scale * 0.2f);
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.Cyan * 0.75f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale,
-                    SpriteEffects.None,
-                    0);
-
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.LightBlue * 0.5f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale * 0.75f,
-                    SpriteEffects.None,
-                    0);
-
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.White * 0.75f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale * 0.6f,
-                    SpriteEffects.None,
-                    0);
-                EasyDraw.AnotherDraw(BlendState.AlphaBlend);
-                return false;
-            }
-
 
 
             Texture2D tex = ModContent.Request<Texture2D>("WireBugMod/Images/WireBug").Value;
@@ -225,17 +267,18 @@ namespace WireBugMod.Projectiles.GSword
             dust.scale = scale;
         }
 
-        private void SummonSword(int type, int behavior)
+        private void SummonSword(int type, float rot, int damage, float kb, int hitCooldown = 999)
         {
             if (SwordProj != -1) KillSword();
             Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<BackGSwordProj>(), 0, 0, owner.whoAmI);
+            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<GSwordWeaponProj>(), damage, kb, owner.whoAmI);
             if (protmp >= 0)
             {
-                BackGSwordProj modproj = Main.projectile[protmp].ModProjectile as BackGSwordProj;
+                Main.projectile[protmp].rotation = rot;
+                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
+                GSwordWeaponProj modproj = Main.projectile[protmp].ModProjectile as GSwordWeaponProj;
                 modproj.ProjOwner = Projectile.whoAmI;
                 modproj.ItemType = type;
-                modproj.Behavior = behavior;
                 SwordProj = protmp;
             }
         }

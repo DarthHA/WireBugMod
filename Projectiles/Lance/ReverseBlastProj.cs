@@ -8,7 +8,7 @@ using WireBugMod.Projectiles.Lance;
 using WireBugMod.System;
 using WireBugMod.Utils;
 
-namespace WireBugMod.Projectiles
+namespace WireBugMod.Projectiles.Lance
 {
     public enum ReverseBlastPhase
     {
@@ -114,7 +114,7 @@ namespace WireBugMod.Projectiles
                 if (Projectile.ai[1] % 10 == 2)
                 {
                     float ShootLength = DrawUtils.GetProjTexture(owner.HeldItem.shoot).Size().Distance(Vector2.Zero) * owner.GetAdjustedItemScale(owner.HeldItem) / 2 - 20;
-                    int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0), owner.Center - MovingRotation.ToRotationVector2() * ShootLength, (-MovingRotation.ToRotationVector2()) * owner.HeldItem.shootSpeed * 3, 343, owner.GetWeaponDamage() * 5, owner.GetWeaponKnockback());
+                    int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center - MovingRotation.ToRotationVector2() * ShootLength, (-MovingRotation.ToRotationVector2()) * owner.HeldItem.shootSpeed * 3, 343, owner.GetWeaponDamage() * 5, owner.GetWeaponKnockback());
                     Main.projectile[protmp].usesLocalNPCImmunity = true;
                     Main.projectile[protmp].localNPCHitCooldown = 10;
                 }
@@ -243,7 +243,7 @@ namespace WireBugMod.Projectiles
         {
             if (LanceProj != -1) KillSpear();
             Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0), owner.Center, Vector2.Zero, ModContent.ProjectileType<LanceWeaponProj>(), damage, kb, owner.whoAmI);
+            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<LanceWeaponProj>(), damage, kb, owner.whoAmI);
             if (protmp >= 0)
             {
                 Main.projectile[protmp].rotation = rot;

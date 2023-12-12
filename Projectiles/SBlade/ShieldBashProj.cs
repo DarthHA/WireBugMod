@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Humanizer.DateTimeHumanizeStrategy;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -25,10 +26,11 @@ namespace WireBugMod.Projectiles.SBlade
         public const float HoverY = 50;
         public const float BugWireOffset = 10;
         public const float ShootSpeed = 20;
-        public const float DragSpeed = 30;
+        public const float DragSpeed = 25;
         public const float ReturnSpeed = 20;
 
         private int SwordProj = -1;
+        private bool GetHit = false;
         private bool Hit = false;
 
         public ShieldBashPhase Phase = ShieldBashPhase.Default;
@@ -114,10 +116,15 @@ namespace WireBugMod.Projectiles.SBlade
                     Projectile.ai[1] = 0;
                     owner.GetModPlayer<MiscEffectPlayer>().ShieldRotation = PlayerUtils.GetRotationByDirection(TargetRot, owner.direction);
                     ActivatingGP = true;
+                    ShieldLevel = 2;
                 }
             }
-            else if (Phase == ShieldBashPhase.Drag)      //拉扯，可派生悬挂
+            else if (Phase == ShieldBashPhase.Drag)      //拉扯
             {
+                for (int i = 0; i < 2; i++)
+                {
+                    GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                }
                 Projectile.ai[1]++;
                 Vector2 HoverPos = TargetPos + Vector2.Normalize(TargetPos - StartPos) * HoverY;
                 Projectile.Center = HoverPos;
@@ -135,14 +142,14 @@ namespace WireBugMod.Projectiles.SBlade
                     Main.projectile[SwordProj].rotation += DeltaRot;
                 }
 
-                if (owner.GetModPlayer<MiscEffectPlayer>().JustHit > 0 && !Hit)
+                if (owner.GetModPlayer<MiscEffectPlayer>().JustHit > 0 && !GetHit)
                 {
-                    Hit = true;
+                    GetHit = true;
                     GPSpark.Summon(owner.Center + TargetRot.ToRotationVector2() * 10);
                     owner.SetIFrame(60);
                 }
 
-                if (Projectile.ai[1] >= timeNeeded || owner.Distance(TargetPos) <= DragSpeed / 1.5f)
+                if (Projectile.ai[1] >= timeNeeded || owner.Distance(TargetPos) <= DragSpeed / 1.5f || (Projectile.ai[1] >= 5 && Hit))
                 {
                     owner.velocity = Vector2.Normalize(TargetPos - StartPos) * 5;
                     owner.SetPlayerFallStart(StartPos);
@@ -150,16 +157,17 @@ namespace WireBugMod.Projectiles.SBlade
                     Phase = ShieldBashPhase.Pause;
                     Projectile.ai[1] = 0;
                     ActivatingGP = false;
+                    ShieldLevel = 0;
                 }
             }
-            else if (Phase == ShieldBashPhase.Pause)      //拉扯，可派生悬挂
+            else if (Phase == ShieldBashPhase.Pause)      //暂停
             {
                 Projectile.ai[1]++;
 
                 float TargetRot = (TargetPos - StartPos).ToRotation();
                 owner.GetModPlayer<MiscEffectPlayer>().ShieldRotation = PlayerUtils.GetRotationByDirection(TargetRot, owner.direction);
 
-                if (Projectile.ai[1] > 20)
+                if (Projectile.ai[1] > 10)
                 {
                     KillSword();
                     ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
@@ -170,7 +178,24 @@ namespace WireBugMod.Projectiles.SBlade
 
         }
 
+        public override bool? CanHitNPC(NPC target)
+        {
+            if (Phase == ShieldBashPhase.Drag) return null;
+            return false;
+        }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            Player owner = Main.player[Projectile.owner];
+            float point = 0f;
+            Vector2 Unit = Vector2.Normalize(TargetPos - StartPos);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), owner.Center - Unit * 12, owner.Center + Unit * 24, 20, ref point);
+        }
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            Main.player[Projectile.owner].SetIFrame(120);
+            Hit = true;
+        }
         public override bool PreDraw(ref Color lightColor)
         {
 
@@ -229,7 +254,7 @@ namespace WireBugMod.Projectiles.SBlade
         {
             if (SwordProj != -1) KillSword();
             Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0), owner.Center, Vector2.Zero, ModContent.ProjectileType<SBladeWeaponProj>(), damage, kb, owner.whoAmI);
+            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<SBladeWeaponProj>(), damage, kb, owner.whoAmI);
             if (protmp >= 0)
             {
                 Main.projectile[protmp].rotation = rot;

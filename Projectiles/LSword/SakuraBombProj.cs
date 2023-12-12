@@ -32,8 +32,7 @@ namespace WireBugMod.Projectiles.LSword
                 if (Projectile.ai[1] % 7 == 1)
                 {
                     Vector2 SpawnPos = target.position + new Vector2(Main.rand.Next(target.width), Main.rand.Next(target.height));
-                    int protmp = Projectile.NewProjectile(Projectile.GetSource_FromThis(), SpawnPos, Vector2.Zero, ModContent.ProjectileType<SlashProj>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                    Main.projectile[protmp].rotation = Main.rand.NextFloat() * MathHelper.TwoPi;
+                    SlashProj.Summon(Main.player[Projectile.owner], SpawnPos, Projectile.damage, Projectile.knockBack);
                 }
             }
             if (Projectile.ai[1] >= 120)

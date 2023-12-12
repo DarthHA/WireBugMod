@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WireBugMod.System;
@@ -145,6 +146,12 @@ namespace WireBugMod.Projectiles
 
                 if (!owner.GetModPlayer<WireBugPlayer>().PressingWireDash)
                 {
+                    if (PlayerInput.Triggers.Current.Jump)
+                    {
+                        int dir = Math.Sign(Main.MouseWorld.X - owner.Center.X + 0.01f);
+                        owner.velocity += new Vector2(Player.jumpSpeed * dir, -Player.jumpSpeed) * 2f;
+                        owner.direction = dir;
+                    }
                     ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;

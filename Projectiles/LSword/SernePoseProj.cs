@@ -207,7 +207,7 @@ namespace WireBugMod.Projectiles.LSword
         {
             if (SwordProj != -1) KillSword();
             Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0), owner.Center, Vector2.Zero, ModContent.ProjectileType<LSwordWeaponProj>(), damage, kb, owner.whoAmI);
+            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<LSwordWeaponProj>(), damage, kb, owner.whoAmI);
             if (protmp >= 0)
             {
                 Main.projectile[protmp].rotation = rot;

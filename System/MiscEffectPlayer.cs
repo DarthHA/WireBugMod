@@ -4,7 +4,6 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WireBugMod.Projectiles;
-using static Humanizer.In;
 
 namespace WireBugMod.System
 {
@@ -205,12 +204,11 @@ namespace WireBugMod.System
             if (ActivatingGP)
             {
                 modifiers.ModifyHurtInfo += (ref Player.HurtInfo info) => { info.SoundDisabled = true; info.DustDisabled = true; info.Dodgeable = false; };
-                if (ShieldLevel == 2)
-                {
-                    modifiers.FinalDamage *= 0.025f;
-                }
             }
-
+            if (ShieldLevel == 2)
+            {
+                modifiers.FinalDamage *= 0.025f;
+            }
         }
 
 

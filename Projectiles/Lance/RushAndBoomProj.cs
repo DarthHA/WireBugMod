@@ -111,7 +111,7 @@ namespace WireBugMod.Projectiles.Lance
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                    GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
                 float TargetRot = (TargetPos - StartPos).ToRotation();
@@ -163,7 +163,7 @@ namespace WireBugMod.Projectiles.Lance
                     {
                         float ShootRot = i + TargetRot;
                         float ShootLength = DrawUtils.GetProjTexture(owner.HeldItem.shoot).Size().Distance(Vector2.Zero) * owner.GetAdjustedItemScale(owner.HeldItem) / 2 - 20;
-                        int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0), owner.Center + TargetRot.ToRotationVector2() * ShootLength, ShootRot.ToRotationVector2() * owner.HeldItem.shootSpeed * 3, 343, owner.GetWeaponDamage() * 5, owner.GetWeaponKnockback());
+                        int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center + TargetRot.ToRotationVector2() * ShootLength, ShootRot.ToRotationVector2() * owner.HeldItem.shootSpeed * 3, 343, owner.GetWeaponDamage() * 5, owner.GetWeaponKnockback());
                         Main.projectile[protmp].usesLocalNPCImmunity = true;
                         Main.projectile[protmp].localNPCHitCooldown = 10;
                     }
@@ -302,7 +302,7 @@ namespace WireBugMod.Projectiles.Lance
         {
             if (LanceProj != -1) KillSpear();
             Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0), owner.Center, Vector2.Zero, ModContent.ProjectileType<LanceWeaponProj>(), damage, kb, owner.whoAmI);
+            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<LanceWeaponProj>(), damage, kb, owner.whoAmI);
             if (protmp >= 0)
             {
                 Main.projectile[protmp].rotation = rot;

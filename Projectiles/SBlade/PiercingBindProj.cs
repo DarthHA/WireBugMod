@@ -143,18 +143,17 @@ namespace WireBugMod.Projectiles.SBlade
                     owner.StrikeNPCDirect(Main.npc[Target],
                         Main.npc[Target].CalculateHitInfo((int)Projectile.localAI[0] + 30, Math.Sign(Main.npc[Target].Center.X - owner.Center.X), true, 0, DamageClass.Melee));
 
-                    int protmp = Projectile.NewProjectile(Main.LocalPlayer.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SlashProj>(), 0, 0, Main.myPlayer);
-                    Main.projectile[protmp].rotation = Main.rand.NextFloat() * MathHelper.TwoPi;
+                    SlashProj.Summon(owner, Projectile.Center, 0, 0);
                 }
                 if (Projectile.localAI[0] > 0)
                 {
-                    for (int i = 0; i < 6; i++)
+                    for (int i = 0; i < 7; i++)
                     {
                         float radian = 80 + Main.rand.Next(0, 40);
                         float inip = Main.rand.NextFloat() * MathHelper.TwoPi;
                         float vel = Main.rand.NextFloat() * 0.6f + 0.6f;
                         float scale = Main.rand.NextFloat() * 2f + 2f;
-                        float rot2 = 0.6f - 0.2f * i - 0.3f;
+                        float rot2 = 0.6f - 0.2f * i;
                         PiercingBindBugRoundingProj2.SummonProj(Projectile.Center, Vector2.Zero, Color.Cyan, radian, rot2, inip, 0.15f, vel, scale, Main.rand.Next(2) * 2 - 1);
                     }
                 }
@@ -240,13 +239,13 @@ namespace WireBugMod.Projectiles.SBlade
             LockBug = false;
             Connected = true;
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 5; i++)
             {
                 float radian = 70 + Main.rand.Next(0, 30);
                 float inip = Main.rand.NextFloat() * MathHelper.TwoPi;
                 float vel = Main.rand.NextFloat() * 0.6f + 0.6f;
                 float scale = Main.rand.NextFloat() * 2f + 2f;
-                float rot2 = 0.6f - 0.2f * i - 0.3f;
+                float rot2 = 0.6f - 0.3f * i;
                 PiercingBindBugRoundingProj.SummonProj(Projectile, Vector2.Zero, Color.Cyan, radian, rot2, inip, 0.15f, vel, scale, Main.rand.Next(2) * 2 - 1);
             }
         }

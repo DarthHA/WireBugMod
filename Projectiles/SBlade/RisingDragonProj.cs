@@ -147,10 +147,6 @@ namespace WireBugMod.Projectiles.SBlade
             }
             else if (Phase == RisingDragonPhase.GPPause)        //延长一段GP判定试试
             {
-                for (int i = 0; i < 2; i++)
-                {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
-                }
 
                 Projectile.ai[1]++;
 
@@ -195,7 +191,7 @@ namespace WireBugMod.Projectiles.SBlade
 
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                    GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
 
                 Projectile.ai[1]++;
@@ -233,7 +229,7 @@ namespace WireBugMod.Projectiles.SBlade
 
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                    GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
 
                 Projectile.ai[1]++;
@@ -326,10 +322,6 @@ namespace WireBugMod.Projectiles.SBlade
             else if (Phase == RisingDragonPhase.SlashDown)       //劈落
             {
                 owner.SetIFrame(120);
-                for (int i = 0; i < 2; i++)
-                {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
-                }
                 Projectile.ai[1]++;
 
                 int timeNeeded = Math.Clamp((int)((StartPos - DownPos).Length() / DragSpeed2), 1, 114514);
@@ -468,7 +460,7 @@ namespace WireBugMod.Projectiles.SBlade
         {
             if (SwordProj != -1) KillSword();
             Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0), owner.Center, Vector2.Zero, ModContent.ProjectileType<RisingDragonWeaponProj>(), damage, kb, owner.whoAmI);
+            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<RisingDragonWeaponProj>(), damage, kb, owner.whoAmI);
             if (protmp >= 0)
             {
                 Main.projectile[protmp].rotation = rot;

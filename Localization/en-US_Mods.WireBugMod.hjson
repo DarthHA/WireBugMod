@@ -69,6 +69,8 @@ Projectiles: {
 	PiercingBindBugRoundingProj.DisplayName: Ironsilk
 	PiercingBindBugRoundingProj2.DisplayName: Ironsilk
 	ShieldBashProj.DisplayName: Shield Bash Proj
+	ACSlashProj.DisplayName: A C Slash Proj
+	ACSBugRoundingProj.DisplayName: A C S Bug Rounding Proj
 }
 
 WeaponType: {

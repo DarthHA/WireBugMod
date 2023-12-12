@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
-using WireBugMod.Projectiles;
+using WireBugMod.Projectiles.Lance;
 using WireBugMod.System;
 using WireBugMod.System.Skill;
 
