@@ -27,7 +27,6 @@ namespace WireBugMod.Projectiles.SBlade
         public Vector2 StartPos = Vector2.Zero;
         public Vector2 DownPos = Vector2.Zero;
         public bool Connected = true;
-        public bool BecomeTrail = false;
         public bool Disappear = false;
 
         public const float HoverY = 50;
@@ -75,7 +74,7 @@ namespace WireBugMod.Projectiles.SBlade
                 Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
             }
 
-            if (Main.rand.NextBool(12))
+            if (!Disappear && Main.rand.NextBool(12))
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -220,6 +219,8 @@ namespace WireBugMod.Projectiles.SBlade
                     Projectile.ai[1] = 0;
                     Phase = RisingDragonPhase.Pause1;
                     Connected = false;
+                    ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
+                    Disappear = true;
                 }
             }
             else if (Phase == RisingDragonPhase.GPDrag)      //GP拉扯，带伤害判定
@@ -266,6 +267,8 @@ namespace WireBugMod.Projectiles.SBlade
                     Projectile.ai[1] = 0;
                     Phase = RisingDragonPhase.Pause1;
                     Connected = false;
+                    ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
+                    Disappear = true;
                 }
             }
             else if (Phase == RisingDragonPhase.Pause1)       //短暂暂停,30帧
@@ -292,7 +295,7 @@ namespace WireBugMod.Projectiles.SBlade
                 if (Projectile.ai[1] > 30 || (owner.velocity.Y == 0 && owner.oldVelocity.Y == 0))     //时间过长或者落地
                 {
                     KillSword();
-                    ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
+                    //ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
                 }
@@ -345,7 +348,7 @@ namespace WireBugMod.Projectiles.SBlade
                 if (Projectile.ai[1] > 20)
                 {
                     KillSword();
-                    ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
+                    //ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
                 }
@@ -368,50 +371,9 @@ namespace WireBugMod.Projectiles.SBlade
                     Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
                     percentage = Projectile.Distance(HoverPos) / HoverPos.Distance(StartPos);
                 }
-                DrawUtils.DrawWire(Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, BugWireOffset), percentage, Color.Cyan, 0.01f);
+                DrawUtils.DrawWire(Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, BugWireOffset), percentage, Color.White, 0.01f);
                 //Terraria.Utils.DrawLine(Main.spriteBatch, Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, 5), Color.Cyan, Color.Cyan, 2);
             }
-
-            if (BecomeTrail)        //绘制拖尾
-            {
-                EasyDraw.AnotherDraw(BlendState.Additive);
-                Texture2D texTrail = ModContent.Request<Texture2D>("WireBugMod/Images/BlobGlow").Value;
-                Vector2 origin = new Vector2(texTrail.Width * 0.75f, texTrail.Height / 2f);
-                Vector2 scale = new Vector2(Projectile.scale * 0.3f, Projectile.scale * 0.2f);
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.Cyan * 0.75f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale,
-                    SpriteEffects.None,
-                    0);
-
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.LightBlue * 0.5f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale * 0.75f,
-                    SpriteEffects.None,
-                    0);
-
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.White * 0.75f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale * 0.6f,
-                    SpriteEffects.None,
-                    0);
-                EasyDraw.AnotherDraw(BlendState.AlphaBlend);
-                return false;
-            }
-
-
 
             Texture2D tex = ModContent.Request<Texture2D>("WireBugMod/Images/WireBug").Value;
             Texture2D glow = ModContent.Request<Texture2D>("WireBugMod/Images/WireBug_Glow").Value;

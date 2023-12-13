@@ -20,7 +20,6 @@ namespace WireBugMod.Projectiles.GSword
         public Vector2 TargetPos = Vector2.Zero;
         public Vector2 StartPos = Vector2.Zero;
         public bool Connected = true;
-        public bool BecomeTrail = false;
 
         public const float HoverY = 50;
         public const float BugWireOffset = 10;
@@ -84,7 +83,7 @@ namespace WireBugMod.Projectiles.GSword
                 {
                     SummonSword(owner.HeldItem.type, 0);
                 }
-                Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
+                Vector2 HoverPos = TargetPos + Vector2.Normalize(TargetPos - StartPos) * HoverY;
                 int timeNeeded = Math.Clamp((int)((StartPos - HoverPos).Length() / ShootSpeed), 1, 10);
                 Projectile.Center = Vector2.Lerp(StartPos, HoverPos, Projectile.ai[1] / timeNeeded);
                 Projectile.spriteDirection = Math.Sign(HoverPos.X - StartPos.X);
@@ -108,7 +107,7 @@ namespace WireBugMod.Projectiles.GSword
                     GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
-                Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
+                Vector2 HoverPos = TargetPos + Vector2.Normalize(TargetPos - StartPos) * HoverY;
                 Projectile.Center = HoverPos;
                 int timeNeeded = Math.Clamp((int)((StartPos - TargetPos).Length() / DragSpeed), 1, 114514);
                 //owner.Center = Vector2.Lerp(StartPos, TargetPos, Projectile.ai[1] / timeNeeded);         Œª“∆“∆∂Ø
@@ -138,52 +137,12 @@ namespace WireBugMod.Projectiles.GSword
                 float percentage = 0;
                 if (Phase == AtkPowerUpPhase.Shoot)
                 {
-                    Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
+                    Vector2 HoverPos = TargetPos + Vector2.Normalize(TargetPos - StartPos) * HoverY;
                     percentage = Projectile.Distance(HoverPos) / HoverPos.Distance(StartPos);
                 }
-                DrawUtils.DrawWire(Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, BugWireOffset), percentage, Color.Cyan, 0.01f);
+                DrawUtils.DrawWire(Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, BugWireOffset), percentage, Color.White, 0.01f);
                 //Terraria.Utils.DrawLine(Main.spriteBatch, Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, 5), Color.Cyan, Color.Cyan, 2);
             }
-
-            if (BecomeTrail)        //ªÊ÷∆ÕœŒ≤
-            {
-                EasyDraw.AnotherDraw(BlendState.Additive);
-                Texture2D texTrail = ModContent.Request<Texture2D>("WireBugMod/Images/BlobGlow").Value;
-                Vector2 origin = new Vector2(texTrail.Width * 0.75f, texTrail.Height / 2f);
-                Vector2 scale = new Vector2(Projectile.scale * 0.3f, Projectile.scale * 0.2f);
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.Cyan * 0.75f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale,
-                    SpriteEffects.None,
-                    0);
-
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.LightBlue * 0.5f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale * 0.75f,
-                    SpriteEffects.None,
-                    0);
-
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.White * 0.75f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale * 0.6f,
-                    SpriteEffects.None,
-                    0);
-                EasyDraw.AnotherDraw(BlendState.AlphaBlend);
-                return false;
-            }
-
 
 
             Texture2D tex = ModContent.Request<Texture2D>("WireBugMod/Images/WireBug").Value;

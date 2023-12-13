@@ -162,8 +162,8 @@ namespace WireBugMod.Projectiles.SBlade
 
             Vector2 EndPos = Projectile.Center + GetRotByDir(Projectile.rotation, owner.direction).ToRotationVector2() * StringLen;
 
-            Terraria.Utils.DrawLine(Main.spriteBatch, Projectile.Center, EndPos, Color.Cyan, Color.Cyan, 2);
-
+            Terraria.Utils.DrawLine(Main.spriteBatch, Projectile.Center, EndPos, Color.Cyan, Color.Cyan, 2f);
+            Terraria.Utils.DrawLine(Main.spriteBatch, Projectile.Center, EndPos, Color.White, Color.White, 1.25f);
 
             Main.spriteBatch.Draw(tex,
                 EndPos - Main.screenPosition,

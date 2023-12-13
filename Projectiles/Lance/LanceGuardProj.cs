@@ -160,7 +160,7 @@ namespace WireBugMod.Projectiles.Lance
                     Vector2 Pos = i.ToRotationVector2() * 50;
                     Pos.Y /= 4;
                     Pos += owner.Bottom + new Vector2(ShieldOffsetX * owner.direction, 12 * owner.gravDir);
-                    DrawUtils.DrawWire(DrawCenter, Pos, 0, Color.Cyan, 0.0075f);
+                    DrawUtils.DrawWire(DrawCenter, Pos, 0, Color.White, 0.0075f);
                 }
             }
             else
@@ -172,7 +172,7 @@ namespace WireBugMod.Projectiles.Lance
                     Vector2 Pos = i.ToRotationVector2() * 50;
                     Pos.Y /= 3;
                     Pos += owner.Bottom + new Vector2(ShieldOffsetX * owner.direction, 5 * owner.gravDir);
-                    DrawUtils.DrawWire(DrawCenter, Pos, 0, Color.Cyan, 0.0075f);
+                    DrawUtils.DrawWire(DrawCenter, Pos, 0, Color.White, 0.0075f);
                 }
             }
             return false;

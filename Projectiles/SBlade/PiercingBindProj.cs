@@ -149,12 +149,13 @@ namespace WireBugMod.Projectiles.SBlade
                 {
                     for (int i = 0; i < 7; i++)
                     {
-                        float radian = 80 + Main.rand.Next(0, 40);
+                        float radian = 60 + Main.rand.Next(0, 20);
                         float inip = Main.rand.NextFloat() * MathHelper.TwoPi;
                         float vel = Main.rand.NextFloat() * 0.6f + 0.6f;
                         float scale = Main.rand.NextFloat() * 2f + 2f;
-                        float rot2 = 0.6f - 0.2f * i;
-                        PiercingBindBugRoundingProj2.SummonProj(Projectile.Center, Vector2.Zero, Color.Cyan, radian, rot2, inip, 0.15f, vel, scale, Main.rand.Next(2) * 2 - 1);
+                        float rot2 = 0.45f - 0.15f * i;
+                        Vector2 OffSet = new(0, Main.rand.Next(-12, 12));
+                        PiercingBindBugRoundingProj2.SummonProj(Projectile.Center, OffSet, Color.Cyan, radian, rot2, inip, 0.15f, vel, scale, Main.rand.Next(2) * 2 - 1);
                     }
                 }
 
@@ -234,19 +235,20 @@ namespace WireBugMod.Projectiles.SBlade
 
             SavedDir = target.spriteDirection;
             SavedRot = Projectile.rotation - target.rotation;
-            SavedRelaPos = (Projectile.Center - target.Center).RotatedBy(-target.rotation);
+            SavedRelaPos = ((Projectile.Center + target.Center) / 2f - target.Center).RotatedBy(-target.rotation);
             DisableMeleeEffect = false;
             LockBug = false;
             Connected = true;
 
             for (int i = 0; i < 5; i++)
             {
-                float radian = 70 + Main.rand.Next(0, 30);
+                float radian = 50 + Main.rand.Next(0, 20);
                 float inip = Main.rand.NextFloat() * MathHelper.TwoPi;
                 float vel = Main.rand.NextFloat() * 0.6f + 0.6f;
                 float scale = Main.rand.NextFloat() * 2f + 2f;
-                float rot2 = 0.6f - 0.3f * i;
-                PiercingBindBugRoundingProj.SummonProj(Projectile, Vector2.Zero, Color.Cyan, radian, rot2, inip, 0.15f, vel, scale, Main.rand.Next(2) * 2 - 1);
+                float rot2 = 0.3f - 0.15f * i;
+                Vector2 OffSet = new(0, Main.rand.Next(-12, 12));
+                PiercingBindBugRoundingProj.SummonProj(Projectile, OffSet, Color.Cyan, radian, rot2, inip, 0.15f, vel, scale, Main.rand.Next(2) * 2 - 1);
             }
         }
     }

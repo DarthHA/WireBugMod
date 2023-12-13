@@ -204,10 +204,10 @@ namespace WireBugMod.Projectiles.SBlade
                 float percentage = 0;
                 if (Phase == ShieldBashPhase.Shoot)
                 {
-                    Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
+                    Vector2 HoverPos = TargetPos + Vector2.Normalize(TargetPos - StartPos) * HoverY;
                     percentage = Projectile.Distance(HoverPos) / HoverPos.Distance(StartPos);
                 }
-                DrawUtils.DrawWire(Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, BugWireOffset), percentage, Color.Cyan, 0.01f);
+                DrawUtils.DrawWire(Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, BugWireOffset), percentage, Color.White, 0.01f);
                 //Terraria.Utils.DrawLine(Main.spriteBatch, Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, 5), Color.Cyan, Color.Cyan, 2);
             }
 

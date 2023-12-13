@@ -71,7 +71,7 @@ namespace WireBugMod.Projectiles.GSword
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
             float r = Projectile.ai[1] / 20f * MathHelper.TwoPi * RotateDir * VelocityModifier + IniPhase;
-            r -= RotateDir * MathHelper.Pi / 8f * LengthModifier;
+            r -= RotateDir * MathHelper.Pi / 8f * GetRealLength();
             if (r.ToRotationVector2().Y > 0)
             {
                 overPlayers.Add(index);
@@ -84,16 +84,24 @@ namespace WireBugMod.Projectiles.GSword
 
         public override void AI()
         {
-            if (Projectile.localAI[1] == 1 || Projectile.localAI[0] - 1 == -1 || !Main.projectile[(int)Projectile.localAI[0] - 1].active)
+            if (Projectile.localAI[0] - 1 == -1 || !Main.projectile[(int)Projectile.localAI[0] - 1].active)
             {
                 Projectile.Kill();
                 return;
             }
 
             Projectile.ai[1]++;
-            float r = Projectile.ai[1] / 20f * MathHelper.TwoPi * RotateDir * VelocityModifier + IniPhase; ;
+            float r = Projectile.ai[1] / 20f * MathHelper.TwoPi * RotateDir * VelocityModifier + IniPhase;
             Projectile.rotation = GetRot(r);
             Projectile.Center = Main.player[Main.projectile[(int)Projectile.localAI[0] - 1].owner].Center;
+            if (Projectile.localAI[1] == 1)
+            {
+                if (Projectile.ai[0] == 0) Projectile.ai[0] = Projectile.ai[1];
+                if (Projectile.ai[1] - Projectile.ai[0] > 20)
+                {
+                    Projectile.Kill();
+                }
+            }
         }
 
         private float GetRot(float r)
@@ -112,6 +120,17 @@ namespace WireBugMod.Projectiles.GSword
             return CirclePos;
         }
 
+        public float GetRealLength()
+        {
+            if (Projectile.localAI[1] == 0)
+            {
+                return MathHelper.Lerp(0.1f * LengthModifier, LengthModifier, Math.Clamp(Projectile.ai[1] / 20f, 0, 1));
+            }
+            else
+            {
+                return MathHelper.Lerp(LengthModifier, 0.1f * LengthModifier, Math.Clamp((Projectile.ai[1] - Projectile.ai[0]) / 20f, 0, 1f));
+            }
+        }
         public override bool PreDraw(ref Color lightColor)
         {
             float r = Projectile.ai[1] / 20f * MathHelper.TwoPi * RotateDir * VelocityModifier + IniPhase;
@@ -138,7 +157,7 @@ namespace WireBugMod.Projectiles.GSword
 
                 vertexInfos2.Add(new CustomVertexInfo(Center + GetCirclePos(r) + UnitY * 0.6f, Color.White, new Vector3(progress, 0f, 1)));
                 vertexInfos2.Add(new CustomVertexInfo(Center + GetCirclePos(r) - UnitY * 0.6f, Color.White, new Vector3(progress, 1f, 1)));
-                r -= RotateDir * MathHelper.Pi / 48f * LengthModifier;
+                r -= RotateDir * MathHelper.Pi / 48f * GetRealLength();
             }
             DrawUtils.DrawTrail(texExtra, vertexInfos, Main.spriteBatch, color, BlendState.Additive);
             DrawUtils.DrawTrail(texExtra, vertexInfos2, Main.spriteBatch, Color.White, BlendState.Additive);

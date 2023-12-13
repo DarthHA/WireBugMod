@@ -69,7 +69,7 @@ namespace WireBugMod.Projectiles.Lance
                 Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
             }
 
-            if (Main.rand.NextBool(12))
+            if (!Disappear && Main.rand.NextBool(12))
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -188,7 +188,7 @@ namespace WireBugMod.Projectiles.Lance
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                    GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
                 Vector2 HoverPos = DownPos + new Vector2(0, HoverY);
@@ -246,7 +246,7 @@ namespace WireBugMod.Projectiles.Lance
                     Vector2 HoverPos = DownPos + new Vector2(0, HoverY);
                     percentage = Projectile.Distance(HoverPos) / HoverPos.Distance(StartPos);
                 }
-                DrawUtils.DrawWire(Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, BugWireOffset), percentage, Color.Cyan, 0.01f);
+                DrawUtils.DrawWire(Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, BugWireOffset), percentage, Color.White, 0.01f);
                 //Terraria.Utils.DrawLine(Main.spriteBatch, Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, 5), Color.Cyan, Color.Cyan, 2);
             }
 

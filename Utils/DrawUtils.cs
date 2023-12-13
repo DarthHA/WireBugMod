@@ -55,14 +55,24 @@ namespace WireBugMod.Utils
             Vector2 origin = new(0, tex.Height / 2);
             Vector2 scale = new(begin.Distance(end) / tex.Width, 1);
             float rot = (end - begin).ToRotation();
+
             EasyDraw.AnotherDraw(SpriteSortMode.Immediate);
             WireBugMod.CoilEffect.Parameters["color"].SetValue(Color.Cyan.ToVector4());
             WireBugMod.CoilEffect.Parameters["n"].SetValue(4);
-            WireBugMod.CoilEffect.Parameters["width"].SetValue(width);
+            WireBugMod.CoilEffect.Parameters["width"].SetValue(width * 1.5f);
+            WireBugMod.CoilEffect.Parameters["k"].SetValue(percentage * 1.5f);
+            WireBugMod.CoilEffect.CurrentTechnique.Passes["CoilEffect"].Apply();
+            Main.spriteBatch.Draw(tex, begin, null, color, rot, origin, scale, SpriteEffects.None, 0);
+            //EasyDraw.AnotherDraw(SpriteSortMode.Deferred);
+            EasyDraw.AnotherDraw(SpriteSortMode.Immediate);
+            WireBugMod.CoilEffect.Parameters["color"].SetValue(color.ToVector4());
+            WireBugMod.CoilEffect.Parameters["n"].SetValue(4);
+            WireBugMod.CoilEffect.Parameters["width"].SetValue(width * 0.75f);
             WireBugMod.CoilEffect.Parameters["k"].SetValue(percentage * 1.5f);
             WireBugMod.CoilEffect.CurrentTechnique.Passes["CoilEffect"].Apply();
             Main.spriteBatch.Draw(tex, begin, null, color, rot, origin, scale, SpriteEffects.None, 0);
             EasyDraw.AnotherDraw(SpriteSortMode.Deferred);
+
         }
 
         public static void DrawSword(Texture2D Tex, Vector2 SwingCenter, float scale, float RotationY, float rotationX = 0, float RotationZ = MathHelper.Pi / 2, SpriteEffects spriteEffects = SpriteEffects.None)

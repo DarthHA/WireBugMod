@@ -21,7 +21,7 @@ namespace WireBugMod.Projectiles.Lance
         public Vector2 TargetPos = Vector2.Zero;
         public Vector2 StartPos = Vector2.Zero;
         public bool Connected = true;
-        public bool BecomeTrail = false;
+        public bool Disappear = false;
 
         public const float HoverY = 50;
         public const float BugWireOffset = 10;
@@ -63,7 +63,7 @@ namespace WireBugMod.Projectiles.Lance
                 Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
             }
 
-            if (Main.rand.NextBool(12))
+            if (!Disappear && Main.rand.NextBool(12))
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -137,6 +137,8 @@ namespace WireBugMod.Projectiles.Lance
                     Phase = RushAndBoomPhase.Attack;
                     owner.SetPlayerFallStart(StartPos);
                     Connected = false;
+                    Disappear = true;
+                    ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Vector2 TargetVel = (TargetPos - StartPos) * 10;
                     StartPos = owner.Center;
                     TargetPos = StartPos + TargetVel;
@@ -193,7 +195,6 @@ namespace WireBugMod.Projectiles.Lance
                 if (Projectile.ai[1] > 20)
                 {
                     KillSpear();
-                    ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
                 }
@@ -204,60 +205,19 @@ namespace WireBugMod.Projectiles.Lance
 
         public override bool PreDraw(ref Color lightColor)
         {
+            if (Disappear) return false;
 
             if (Connected)     //绘制虫丝
             {
                 float percentage = 0;
                 if (Phase == RushAndBoomPhase.Shoot)
                 {
-                    float TargetRot = (TargetPos - StartPos).ToRotation();
-                    Vector2 HoverPos = TargetPos + TargetRot.ToRotationVector2() * HoverY;
+                    Vector2 HoverPos = TargetPos + Vector2.Normalize(TargetPos - StartPos) * HoverY;
                     percentage = Projectile.Distance(HoverPos) / HoverPos.Distance(StartPos);
                 }
-                DrawUtils.DrawWire(Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, BugWireOffset), percentage, Color.Cyan, 0.01f);
+                DrawUtils.DrawWire(Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, BugWireOffset), percentage, Color.White, 0.01f);
                 //Terraria.Utils.DrawLine(Main.spriteBatch, Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, 5), Color.Cyan, Color.Cyan, 2);
             }
-
-            if (BecomeTrail)        //绘制拖尾
-            {
-                EasyDraw.AnotherDraw(BlendState.Additive);
-                Texture2D texTrail = ModContent.Request<Texture2D>("WireBugMod/Images/BlobGlow").Value;
-                Vector2 origin = new Vector2(texTrail.Width * 0.75f, texTrail.Height / 2f);
-                Vector2 scale = new Vector2(Projectile.scale * 0.3f, Projectile.scale * 0.2f);
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.Cyan * 0.75f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale,
-                    SpriteEffects.None,
-                    0);
-
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.LightBlue * 0.5f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale * 0.75f,
-                    SpriteEffects.None,
-                    0);
-
-                Main.spriteBatch.Draw(texTrail,
-                    Projectile.Center - Main.screenPosition,
-                    null,
-                    Color.White * 0.75f,
-                    Projectile.velocity.ToRotation(),
-                    origin,
-                    scale * 0.6f,
-                    SpriteEffects.None,
-                    0);
-                EasyDraw.AnotherDraw(BlendState.AlphaBlend);
-                return false;
-            }
-
-
 
             Texture2D tex = ModContent.Request<Texture2D>("WireBugMod/Images/WireBug").Value;
             Texture2D glow = ModContent.Request<Texture2D>("WireBugMod/Images/WireBug_Glow").Value;

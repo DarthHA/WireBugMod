@@ -38,7 +38,7 @@ namespace WireBugMod.Skills
         {
             Player player = modplayer.Player;
             Vector2 ShootVel = Vector2.Normalize(Main.MouseWorld - player.Center);
-            int protmp = Projectile.NewProjectile(player.GetSource_Misc("WireBug"), player.Center, ShootVel, ModContent.ProjectileType<PiercingBindProj>(), 1, 0, player.whoAmI);
+            int protmp = Projectile.NewProjectile(player.GetSource_Misc("WireBug"), player.Center, ShootVel, ModContent.ProjectileType<PiercingBindProj>(), 1, 5f, player.whoAmI);
             if (protmp >= 0)
             {
                 PiercingBindProj modproj = Main.projectile[protmp].ModProjectile as PiercingBindProj;
