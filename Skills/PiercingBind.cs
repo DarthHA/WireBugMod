@@ -27,7 +27,7 @@ namespace WireBugMod.Skills
         {
             foreach (Projectile proj in Main.projectile)
             {
-                if (proj.active && proj.type == ModContent.ProjectileType<PiercingBindProj>() && proj.owner == modplayer.Player.whoAmI)
+                if (proj.active && SkillUtils.CheckSilkbindProj(proj.type) && proj.owner == modplayer.Player.whoAmI)
                 {
                     return false;
                 }

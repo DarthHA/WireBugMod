@@ -8,7 +8,9 @@ using WireBugMod.Utils;
 
 namespace WireBugMod.Projectiles.LSword
 {
-
+    /// <summary>
+    /// 自带方向
+    /// </summary>
     public class LSwordWeaponProj : ModProjectile
     {
         public int ItemType = -1;

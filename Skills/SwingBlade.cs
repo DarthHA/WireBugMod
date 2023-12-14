@@ -36,7 +36,6 @@ namespace WireBugMod.Skills
                 modproj.DisableMeleeEffect = true;
                 modproj.UsedBugID1 = UseBug1;
                 modproj.UsedBugID2 = UseBug2;
-
                 return true;
             }
 

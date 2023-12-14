@@ -40,37 +40,38 @@ Buffs: {
 }
 
 Projectiles: {
-	LanceDownProj.DisplayName: 翔虫
-	WireDashProj.DisplayName: 翔虫
-	LanceGuardProj.DisplayName: 翔虫
-	LanceBugRoundingProj.DisplayName: 铁虫丝线
+	LanceDownProj.DisplayName: 冲天突刺
+	WireDashProj.DisplayName: 翔虫冲刺
+	LanceGuardProj.DisplayName: 锚泊蓄能
+	LanceBugRoundingProj.DisplayName: 铁虫丝
 	LanceWeaponProj.DisplayName: 长枪
-	GPSpark.DisplayName: GP特效
-	SlashDownProj.DisplayName: 翔虫
+	GPSpark.DisplayName: 格挡
+	SlashDownProj.DisplayName: 狩猎锋刃
 	GSwordWeaponProj.DisplayName: 大剑
-	AtkPowerUpProj.DisplayName: 翔虫
+	AtkPowerUpProj.DisplayName: 强化纳刀
 	BackGSwordProj.DisplayName: 大剑
 	LSwordWeaponProj.DisplayName: 太刀
-	SernePoseProj.DisplayName: 翔虫
-	SakuraSlashProj.DisplayName: 翔虫
+	SernePoseProj.DisplayName: 水月架势
+	SakuraSlashProj.DisplayName: 樱花铁虫气刃斩
 	SakuraBombProj.DisplayName: 樱花铁虫气刃斩
 	SlashProj.DisplayName: 斩击
 	SwingBladeProj.DisplayName: 单手剑
-	SwingBladeRoundingProj.DisplayName: 铁虫丝线
-	RisingDragonProj.DisplayName: 翔虫
+	SwingBladeRoundingProj.DisplayName: 铁虫丝
+	RisingDragonProj.DisplayName: 灭·升龙击
 	SBladeWeaponProj.DisplayName: 单手剑
-	RisingDragonWeaponProj.DisplayName: 翔虫
-	DamageProj.DisplayName: 伤害判定
+	RisingDragonWeaponProj.DisplayName: 单手剑
+	DamageProj.DisplayName: 伤害
 	ReturningBug.DisplayName: 翔虫
-	RushAndBoomProj.DisplayName: 翔虫
-	ReverseBlastProj.DisplayName: 翔虫
-	GroundSplitterProj.DisplayName: 翔虫
+	RushAndBoomProj.DisplayName: 超级全弹发射
+	ReverseBlastProj.DisplayName: 暴风逆退
+	GroundSplitterProj.DisplayName: 地裂斩
 	PiercingBindProj.DisplayName: 铁虫丝
 	PiercingBindBugRoundingProj.DisplayName: 铁虫丝
 	PiercingBindBugRoundingProj2.DisplayName: 铁虫丝
-	ShieldBashProj.DisplayName: 翔虫
-	// ACSlashProj.DisplayName: A C Slash Proj
-	// ACSBugRoundingProj.DisplayName: A C S Bug Rounding Proj
+	ShieldBashProj.DisplayName: 盾牌猛击
+	ACSlashProj.DisplayName: 金刚蓄力斩
+	ACSBugRoundingProj.DisplayName: 铁虫丝
+	// TwinVineProj.DisplayName: Twin Vine Proj
 }
 
 WeaponType: {
@@ -101,6 +102,8 @@ Skills: {
 	PiercingBind: 铁虫斩丝
 	ShieldBash: 盾牌猛击
 	AdamantChargedSlash: 金刚蓄力斩
+	SoaringKick: 飞翔踢
+	TwinVine: 决斗缠绕
 }
 
 SkillInfos: {
@@ -193,6 +196,17 @@ SkillInfos: {
 		'''
 		使用翔虫，压低身体向前方迅速踏步，并释放强蓄力斩的招式。
 		踏步时全身紧绷，甚至能承受住击飞攻击。
+		'''
+	SoaringKick:
+		'''
+		使用翔虫来进行高速踢跃的招式。
+		若踢击没有命中，就只会放出一刀；但若能命中，即可衍生出2种招式。
+		下坠突刺可使练气槽自动上升，气刃兜割则可通过消耗1个阶段的练气槽颜色来释放强力斩击。
+		'''
+	TwinVine:
+		'''
+		将铁虫丝缠在苦无上，用它刺入怪物。
+		苦无刺入期间，猎人自身也可跳跃接近目标。
 		'''
 }
 

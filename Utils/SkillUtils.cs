@@ -1,4 +1,7 @@
 ﻿using Terraria;
+using Terraria.ModLoader;
+using Terraria.ModLoader.Config;
+using WireBugMod.Projectiles.SBlade;
 using WireBugMod.System;
 using WireBugMod.System.Skill;
 
@@ -52,6 +55,11 @@ namespace WireBugMod.Utils
                 return true;
             }
             return false;
+        }
+
+        public static bool CheckSilkbindProj(int type)
+        {
+            return type == ModContent.ProjectileType<PiercingBindProj>() || type== ModContent.ProjectileType<TwinVineProj>();
         }
     }
 }

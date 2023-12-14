@@ -4,24 +4,26 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WireBugMod.System;
+using WireBugMod.UI;
 using WireBugMod.Utils;
 
 namespace WireBugMod.Projectiles.SBlade
 {
-    public enum PiercingBindPhase
+    public enum TwinVinePhase
     {
         Pierce,
         PierceButNoDamage,
         Stay,
-        Boom,
+        MoveForward,
         Default
     }
 
-    public class PiercingBindProj : BaseSkillProj        //特殊：这个弹幕会造成伤害
+    public class TwinVineProj : BaseSkillProj        //特殊：这个弹幕会造成伤害
     {
         public override string Texture => "WireBugMod/Images/PlaceHolder";
 
-        public PiercingBindPhase Phase = PiercingBindPhase.Default;
+        public TwinVinePhase Phase = TwinVinePhase.Default;
 
         bool Connected = false;
 
@@ -30,7 +32,7 @@ namespace WireBugMod.Projectiles.SBlade
         private int SavedDir = 1;
         private float SavedRot = 0;
 
-        public const int Cooldown = 5;
+        public const float DragSpeed = 30;
 
         public override void SetStaticDefaults()
         {
@@ -67,7 +69,7 @@ namespace WireBugMod.Projectiles.SBlade
 
             Lighting.AddLight((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16, 1.5f, 1.5f, 1.5f);
 
-            if (Phase == PiercingBindPhase.Pierce)
+            if (Phase == TwinVinePhase.Pierce)
             {
                 Projectile.ai[1]++;
                 Projectile.rotation = Projectile.velocity.ToRotation();
@@ -80,12 +82,12 @@ namespace WireBugMod.Projectiles.SBlade
                 Projectile.Center = owner.Center + Projectile.rotation.ToRotationVector2() * len;
                 if (Projectile.ai[1] >= 10)
                 {
-                    Phase = PiercingBindPhase.PierceButNoDamage;
+                    Phase = TwinVinePhase.PierceButNoDamage;
                     Projectile.ai[1] = 0;
                     Projectile.friendly = false;
                 }
             }
-            else if (Phase == PiercingBindPhase.PierceButNoDamage)         //仅为视觉特效，不造成伤害
+            else if (Phase == TwinVinePhase.PierceButNoDamage)         //仅为视觉特效，不造成伤害
             {
                 Projectile.ai[1]++;
                 Projectile.rotation = Projectile.velocity.ToRotation();
@@ -101,7 +103,7 @@ namespace WireBugMod.Projectiles.SBlade
                     return;
                 }
             }
-            else if (Phase == PiercingBindPhase.Stay)
+            else if (Phase == TwinVinePhase.Stay)
             {
                 if (Main.rand.NextBool(12))
                 {
@@ -112,8 +114,7 @@ namespace WireBugMod.Projectiles.SBlade
                 }
                 if (Target == -1 || !Main.npc[Target].active || !Main.npc[Target].CanBeChasedBy() || Main.npc[Target].Distance(owner.Center) > 1500)
                 {
-                    Phase = PiercingBindPhase.Boom;
-                    Projectile.ai[1] = 0;
+                    Projectile.Kill();
                     return;
                 }
                 Vector2 RelaPos = SavedRelaPos;
@@ -128,40 +129,102 @@ namespace WireBugMod.Projectiles.SBlade
                     Projectile.rotation = PlayerUtils.GetRotationByDirection(SavedRot, -1) + Main.npc[Target].rotation;
                 }
 
-                Projectile.ai[1]++;
-                if (Projectile.ai[1] > 600)
+                if (!owner.GetModPlayer<WireBugPlayer>().LockInput && !owner.CCed && !owner.ItemAnimationActive && !owner.shimmerWet && !UIManager.Visible)        //可以操作,没有在微光里,没有被定住,且没有同时使用物品，没有打开翔虫UI，不在快速切换冷却时间内
                 {
-                    Phase = PiercingBindPhase.Boom;
-                    Projectile.ai[1] = 0;
-                }
-
-            }
-            else if (Phase == PiercingBindPhase.Boom)            //造成一次总伤害
-            {
-                if (Target != -1 && Main.npc[Target].active && Main.npc[Target].CanBeChasedBy())
-                {
-                    owner.StrikeNPCDirect(Main.npc[Target],
-                        Main.npc[Target].CalculateHitInfo((int)Projectile.localAI[0] + 30, Math.Sign(Main.npc[Target].Center.X - owner.Center.X), true, 0, DamageClass.Melee));
-
-                    SlashProj.Summon(owner, Projectile.Center, 0, 0);
-                }
-                if (Projectile.localAI[0] > 0)
-                {
-                    for (int i = 0; i < 7; i++)
+                    if (owner.GetSkillKeyJPStatus("TwinVine").HasValue && owner.GetSkillKeyJPStatus("TwinVine").Value)
                     {
-                        float radian = 60 + Main.rand.Next(0, 20);
-                        float inip = Main.rand.NextFloat() * MathHelper.TwoPi;
-                        float vel = Main.rand.NextFloat() * 0.6f + 0.6f;
-                        float scale = Main.rand.NextFloat() * 2f + 2f;
-                        float rot2 = 0.45f - 0.15f * i;
-                        Vector2 OffSet = new(0, Main.rand.Next(-12, 12));
-                        PiercingBindBugRoundingProj2.SummonProj(Projectile.Center, OffSet, Color.Cyan, radian, rot2, inip, 0.15f, vel, scale, Main.rand.Next(2) * 2 - 1);
+                        Phase = TwinVinePhase.MoveForward;
+                        LockInput = true;
+                        owner.RemoveAllGrapplingHooks();
+                        owner.mount.Dismount(owner);
+                        return;
                     }
                 }
 
-                Projectile.Kill();
+
+
+                Projectile.ai[1]++;
+                if (Projectile.ai[1] == 10)
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        float radian = 50 + Main.rand.Next(0, 20);
+                        float inip = Main.rand.NextFloat() * MathHelper.TwoPi;
+                        float vel = Main.rand.NextFloat() * 0.6f + 0.6f;
+                        float scale = Main.rand.NextFloat() * 2f + 2f;
+                        float rot2 = 0.3f - 0.15f * i;
+                        Vector2 OffSet = new(0, Main.rand.Next(-12, 12));
+                        PiercingBindBugRoundingProj.SummonProj(Projectile, OffSet, Color.Cyan, radian, rot2, inip, 0.15f, vel, scale, Main.rand.Next(2) * 2 - 1);
+                    }
+                }
+                if (Projectile.ai[1] > 1200)
+                {
+                    Projectile.Kill();
+                    return;
+                }
+
             }
-            else if (Phase == PiercingBindPhase.Default)
+            else if (Phase == TwinVinePhase.MoveForward)    //拉扯前进
+            {
+                if (Main.rand.NextBool(12))
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
+                    }
+                }
+                if (Target == -1 || !Main.npc[Target].active || !Main.npc[Target].CanBeChasedBy() || Main.npc[Target].Distance(owner.Center) > 1500)
+                {
+                    Projectile.Kill();
+                    return;
+                }
+                Vector2 RelaPos = SavedRelaPos;
+                if (SavedDir == Main.npc[Target].spriteDirection)
+                {
+                    Projectile.Center = Main.npc[Target].Center + RelaPos.RotatedBy(Main.npc[Target].rotation);
+                    Projectile.rotation = SavedRot + Main.npc[Target].rotation;
+                }
+                else
+                {
+                    Projectile.Center = Main.npc[Target].Center + new Vector2(-RelaPos.X, RelaPos.Y).RotatedBy(Main.npc[Target].rotation);
+                    Projectile.rotation = PlayerUtils.GetRotationByDirection(SavedRot, -1) + Main.npc[Target].rotation;
+                }
+
+                for (int i = 0; i < 2; i++)
+                {
+                    GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                }
+
+                if (owner.GetSkillKeyJPStatus("TwinVine").HasValue && owner.GetSkillKeyJPStatus("TwinVine").Value)
+                {
+                    Phase = TwinVinePhase.Stay;
+                    Projectile.ai[2] = 0;
+                    LockInput = false;
+                    return;
+                }
+
+                Projectile.ai[2]++;
+
+                Vector2 TargetPos = Main.npc[Target].Center;
+                float DistMin = (Main.npc[Target].width + Main.npc[Target].height) / 4f * 1.4f + 100f;
+                owner.velocity = Vector2.Normalize(TargetPos - owner.Center) * (DragSpeed - 1);
+
+                bool Colliding = Collision.SolidTiles(owner.position + Vector2.Normalize(owner.velocity), owner.width, owner.height);
+                if (!Colliding)
+                {
+                    owner.position += Vector2.Normalize(owner.velocity);
+                }
+                owner.direction = Math.Sign(TargetPos.X - owner.Center.X);
+                if (Colliding || owner.Distance(TargetPos) <= DistMin || Projectile.ai[2] > 300)
+                {
+                    owner.velocity = Vector2.Normalize(owner.velocity) * 1;
+                    Phase = TwinVinePhase.Stay;
+                    Projectile.ai[2] = 0;
+                    LockInput = false;
+                }
+
+            }
+            else if (Phase == TwinVinePhase.Default)
             {
                 Projectile.Kill();
                 return;
@@ -182,7 +245,12 @@ namespace WireBugMod.Projectiles.SBlade
             if (Connected)
             {
                 Vector2 DrawEnd = Projectile.Center - Projectile.rotation.ToRotationVector2() * 12;
-                Terraria.Utils.DrawLine(Main.spriteBatch, DrawEnd, owner.Center, Color.White, Color.Transparent, 2);
+                Color LineColor = Color.White;
+                if (owner.Distance(Main.npc[Target].Center) > 1250)
+                {
+                    LineColor = Color.Red;
+                }
+                Terraria.Utils.DrawLine(Main.spriteBatch, DrawEnd, owner.Center, LineColor, Color.Transparent, 2);
             }
             Main.spriteBatch.Draw(tex,
                 Projectile.Center - Main.screenPosition,
@@ -208,7 +276,7 @@ namespace WireBugMod.Projectiles.SBlade
 
         public override bool? CanHitNPC(NPC target)
         {
-            if (Phase == PiercingBindPhase.Pierce && Target == -1 && target.CanBeChasedBy())
+            if (Phase == TwinVinePhase.Pierce && Target == -1 && target.CanBeChasedBy())
             {
                 return null;
             }
@@ -229,7 +297,7 @@ namespace WireBugMod.Projectiles.SBlade
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Target = target.whoAmI;
-            Phase = PiercingBindPhase.Stay;
+            Phase = TwinVinePhase.Stay;
             Projectile.ai[1] = 0;
 
             SavedDir = target.spriteDirection;
@@ -238,17 +306,6 @@ namespace WireBugMod.Projectiles.SBlade
             DisableMeleeEffect = false;
             LockBug = false;
             Connected = true;
-
-            for (int i = 0; i < 5; i++)
-            {
-                float radian = 50 + Main.rand.Next(0, 20);
-                float inip = Main.rand.NextFloat() * MathHelper.TwoPi;
-                float vel = Main.rand.NextFloat() * 0.6f + 0.6f;
-                float scale = Main.rand.NextFloat() * 2f + 2f;
-                float rot2 = 0.3f - 0.15f * i;
-                Vector2 OffSet = new(0, Main.rand.Next(-12, 12));
-                PiercingBindBugRoundingProj.SummonProj(Projectile, OffSet, Color.Cyan, radian, rot2, inip, 0.15f, vel, scale, Main.rand.Next(2) * 2 - 1);
-            }
         }
     }
 }

@@ -40,37 +40,38 @@ Buffs: {
 }
 
 Projectiles: {
-	LanceDownProj.DisplayName: Wirebug
-	WireDashProj.DisplayName: Wirebug
-	LanceGuardProj.DisplayName: Wirebug
+	LanceDownProj.DisplayName: Skyward Thrust
+	WireDashProj.DisplayName: Wire Dash
+	LanceGuardProj.DisplayName: Anchor Rage
 	LanceBugRoundingProj.DisplayName: Ironsilk
 	LanceWeaponProj.DisplayName: Lance
-	GPSpark.DisplayName: GP Effect
-	SlashDownProj.DisplayName: Wirebug
+	GPSpark.DisplayName: Guard
+	SlashDownProj.DisplayName: Hunting Edge
 	GSwordWeaponProj.DisplayName: Great Sword
-	AtkPowerUpProj.DisplayName: Wirebug
+	AtkPowerUpProj.DisplayName: Power Sheathe
 	BackGSwordProj.DisplayName: Great Sword
 	LSwordWeaponProj.DisplayName: Long Sword
-	SernePoseProj.DisplayName: Wirebug
-	SakuraSlashProj.DisplayName: Wirebug
+	SernePoseProj.DisplayName: Serne Pose
+	SakuraSlashProj.DisplayName: Silkbind Sakura Slash
 	SakuraBombProj.DisplayName: Silkbind Sakura Slash
 	SlashProj.DisplayName: Slash
 	SwingBladeProj.DisplayName: Short Blade
 	SwingBladeRoundingProj.DisplayName: Ironsilk
-	RisingDragonProj.DisplayName: Wirebug
+	RisingDragonProj.DisplayName: Metsu Shoryugeki
 	SBladeWeaponProj.DisplayName: Short Blade
-	RisingDragonWeaponProj.DisplayName: Wirebug
-	DamageProj.DisplayName: Damage Aura
+	RisingDragonWeaponProj.DisplayName: Short Blade
+	DamageProj.DisplayName: Damage
 	ReturningBug.DisplayName: Wirebug
-	RushAndBoomProj.DisplayName: Wirebug
-	ReverseBlastProj.DisplayName: Wirebug
-	GroundSplitterProj.DisplayName: Wirebug
+	RushAndBoomProj.DisplayName: Bullet Barrage
+	ReverseBlastProj.DisplayName: Reverse Blast
+	GroundSplitterProj.DisplayName: Ground Splitter
 	PiercingBindProj.DisplayName: Ironsilk
 	PiercingBindBugRoundingProj.DisplayName: Ironsilk
 	PiercingBindBugRoundingProj2.DisplayName: Ironsilk
-	ShieldBashProj.DisplayName: Shield Bash Proj
-	ACSlashProj.DisplayName: A C Slash Proj
-	ACSBugRoundingProj.DisplayName: A C S Bug Rounding Proj
+	ShieldBashProj.DisplayName: Shield Bash
+	ACSlashProj.DisplayName: Adamant Charged Slash
+	ACSBugRoundingProj.DisplayName: Ironsilk
+	TwinVineProj.DisplayName: Twin Vine Proj
 }
 
 WeaponType: {
@@ -101,6 +102,8 @@ Skills: {
 	PiercingBind: Piercing Bind
 	ShieldBash: Shield Bash
 	AdamantChargedSlash: Adamant Charged Slash
+	SoaringKick: Soaring Kick
+	TwinVine: Twin Vine
 }
 
 SkillInfos: {
@@ -194,6 +197,17 @@ SkillInfos: {
 		'''
 		A technique using a Wirebug to dash forward, and deliver a Strong Charged Slash.
 		Also allows you to withstand knockdown attacks by hardening your body as you dash forth.
+		'''
+	SoaringKick:
+		'''
+		A quick Wirebug-induced jump kick.
+		A missed kick ends the attack with a single slash, while a successful kick can be followed with one of two moves.
+		The Plunging Thrust increases Spirit Gauge, while the Spirit Helm Breaker reduces the Spirit Gauge by one level.
+		'''
+	TwinVine:
+		'''
+		A technique that thrusts a kunai tethered with Ironsilk into it.
+		While the kunai is lodged, the hunter can leap in close to the target with a Closed Jump.
 		'''
 }
 
