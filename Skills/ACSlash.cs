@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 using WireBugMod.Projectiles.GSword;
-using WireBugMod.Projectiles.Lance;
 using WireBugMod.System;
 using WireBugMod.System.Skill;
 
@@ -48,7 +47,7 @@ namespace WireBugMod.Skills
                 modproj.Phase = ACSlashPhase.Shoot;
                 modproj.StartPos = player.Center;
                 modproj.DisableMeleeEffect = true;
-                modproj.ShieldLevel = 2;
+                modproj.ShieldLevel = 1;
                 modproj.UsedBugID1 = UseBug1;
                 modproj.UsedBugID2 = UseBug2;
 

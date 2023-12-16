@@ -5,6 +5,7 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WireBugMod.Projectiles.Weapons;
 using WireBugMod.System;
 using WireBugMod.Utils;
 
@@ -90,7 +91,7 @@ namespace WireBugMod.Projectiles.SBlade
                 Projectile.ai[1]++;
                 if (Projectile.ai[1] == 1)
                 {
-                    SummonSword(owner.HeldItem.type, 0, 0, 0);
+                    LSwordWeaponProj.SummonSword(Projectile, ref SwordProj, 0);
                 }
                 float TargetRot = (TargetPos - StartPos).ToRotation();
                 Main.projectile[SwordProj].rotation = PlayerUtils.GetRotationByDirection(TargetRot, owner.direction);
@@ -169,7 +170,6 @@ namespace WireBugMod.Projectiles.SBlade
 
                 if (Projectile.ai[1] > 10)
                 {
-                    KillSword();
                     ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
@@ -250,27 +250,5 @@ namespace WireBugMod.Projectiles.SBlade
             dust.scale = scale;
         }
 
-        private void SummonSword(int type, float rot, int damage, float kb, int hitCooldown = 999)
-        {
-            if (SwordProj != -1) KillSword();
-            Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<SBladeWeaponProj>(), damage, kb, owner.whoAmI);
-            if (protmp >= 0)
-            {
-                Main.projectile[protmp].rotation = rot;
-                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
-                SBladeWeaponProj modproj = Main.projectile[protmp].ModProjectile as SBladeWeaponProj;
-                modproj.ProjOwner = Projectile.whoAmI;
-                modproj.ItemType = type;
-                SwordProj = protmp;
-            }
-        }
-
-        private void KillSword()
-        {
-            if (SwordProj == -1) return;
-            Main.projectile[SwordProj].Kill();
-            SwordProj = -1;
-        }
     }
 }

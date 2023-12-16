@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WireBugMod.Projectiles.Weapons;
 using WireBugMod.System;
 using WireBugMod.Utils;
 
@@ -74,7 +75,7 @@ namespace WireBugMod.Projectiles.LSword
             {
                 Projectile.localAI[0] = 1;
                 owner.ClearIFrame();
-                SummonSword(owner.HeldItem.type, (Main.MouseWorld - owner.Center).ToRotation(), 0, 0, 999);
+                LSwordWeaponProj.SummonSword(Projectile, ref SwordProj, (Main.MouseWorld - owner.Center).ToRotation());
                 //初始化丝线
                 for (int i = 0; i < LineCount; i++)
                 {
@@ -125,7 +126,7 @@ namespace WireBugMod.Projectiles.LSword
                     ShieldLevel = 0;
                     Vector2 Center = owner.Center + new Vector2(10 * owner.direction, 0 * owner.gravDir);
                     GPSpark.Summon(Center);
-                    SummonSword(owner.HeldItem.type, (Main.MouseWorld - owner.Center).ToRotation(), owner.GetWeaponDamage() * 5, owner.GetWeaponKnockback(), 999);
+                    LSwordWeaponProj.SummonSword(Projectile, ref SwordProj, (Main.MouseWorld - owner.Center).ToRotation(), 5);
                     Main.projectile[SwordProj].friendly = false;
                 }
                 if (Projectile.ai[1] == 10)
@@ -166,10 +167,8 @@ namespace WireBugMod.Projectiles.LSword
             }
             else if (Phase == SernePosePhase.Default)
             {
-                KillSword();
                 Projectile.Kill();
             }
-
 
         }
 
@@ -202,29 +201,5 @@ namespace WireBugMod.Projectiles.LSword
             dust.scale = scale;
         }
 
-
-        private void SummonSword(int type, float rot, int damage, float kb, int hitCooldown = 999)
-        {
-            if (SwordProj != -1) KillSword();
-            Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<LSwordWeaponProj>(), damage, kb, owner.whoAmI);
-            if (protmp >= 0)
-            {
-                Main.projectile[protmp].rotation = rot;
-                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
-                LSwordWeaponProj modproj = Main.projectile[protmp].ModProjectile as LSwordWeaponProj;
-                modproj.ProjOwner = Projectile.whoAmI;
-                modproj.ItemType = type;
-                SwordProj = protmp;
-            }
-        }
-
-
-        private void KillSword()
-        {
-            if (SwordProj == -1) return;
-            Main.projectile[SwordProj].Kill();
-            SwordProj = -1;
-        }
     }
 }

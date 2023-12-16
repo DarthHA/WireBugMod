@@ -17,7 +17,7 @@ namespace WireBugMod.Skills
 
         const float MinRange = 300;
 
-        const float UpwardDist = 200;
+        const float UpwardDist = 100;
         public override int Priority => 2;
         public override int Cooldown => 180;
 
@@ -48,11 +48,11 @@ namespace WireBugMod.Skills
             //TargetX = Math.Clamp(TargetX, player.Center.X - MaxRange, player.Center.X + MaxRange);
             if (TargetX == player.Center.X) TargetX += 1;
             float TargetDistX = TargetX - player.Center.X;
-            float RealX = Math.Abs(TargetDistX), RealY = Math.Clamp(RealX * 0.5f, UpwardDist, 114514);
+            float RealX = Math.Abs(TargetDistX), RealY = UpwardDist;
             bool findPos = false;
-            for (; RealY > RealX * 0.3f; RealY -= 16)
+            for (; RealY > UpwardDist * 0.5f; RealY -= 16)
             {
-                Vector2 UpPos = player.Center + new Vector2(Math.Sign(TargetDistX) * 0.75f * RealX, -RealY);
+                Vector2 UpPos = player.Center + new Vector2(Math.Sign(TargetDistX) * 0.9f * RealX, -RealY);
 
                 Vector2 DownPos = player.Center + new Vector2(Math.Sign(TargetDistX) * RealX, 0);
                 Vector2 Unit = DownPos - UpPos;
@@ -68,7 +68,7 @@ namespace WireBugMod.Skills
 
             if (findPos)
             {
-                Vector2 targetPos = player.Center + new Vector2(Math.Sign(TargetDistX) * 0.75f * RealX, -RealY);
+                Vector2 targetPos = player.Center + new Vector2(Math.Sign(TargetDistX) * 0.9f * RealX, -RealY);
                 Vector2 downPos = player.Center + new Vector2(Math.Sign(TargetDistX) * RealX, 0);
                 Vector2 Unit = downPos - targetPos;
                 downPos = PlayerUtils.SearchForNotBlockedPos(targetPos, targetPos + Unit * 1.5f);

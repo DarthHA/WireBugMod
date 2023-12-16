@@ -1,80 +1,35 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Data;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WireBugMod.Utils;
 
-namespace WireBugMod.Projectiles.Lance
+namespace WireBugMod.Projectiles.Weapons
 {
 
-    public class LanceWeaponProj : ModProjectile
+    public class LanceWeaponProj : BaseWeaponProj
     {
-        public int ProjType = -1;
+        public override bool IsProjTexture => true;
 
-        public int ProjOwner = -1;
-
-        public int Behavior = 0;
 
         public float OffSet = 0;
 
-        public bool Hit = false;
-        public override string Texture => "WireBugMod/Images/PlaceHolder";
-        public override void SetStaticDefaults()
+        public override void SafeAI(Player owner)
         {
-
-        }
-        public override void SetDefaults()
-        {
-            Projectile.width = 10;
-            Projectile.height = 10;
-            Projectile.timeLeft = 99999;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.penetrate = -1;
-            Projectile.netImportant = true;
-
-            Projectile.friendly = true;
-            Projectile.damage = 1;
-            Projectile.DamageType = DamageClass.MeleeNoSpeed;
-
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.ownerHitCheck = true;
-        }
-        public override void AI()
-        {
-            if (ProjType == -1)
-            {
-                Projectile.Kill();
-                return;
-            }
-
-            if (ProjOwner == -1 || !Main.projectile[ProjOwner].active)
-            {
-                Projectile.Kill();
-                return;
-            }
-
-
-            Player owner = Main.player[Projectile.owner];
-            if (owner.IsDead())
-            {
-                Projectile.Kill();
-                return;
-            }
             owner.heldProj = Projectile.whoAmI;
             Projectile.Center = owner.Center;
             owner.itemTime = owner.itemAnimation = 2;
 
             owner.ChangeItemRotation(Projectile.rotation, false);
 
-            if (Behavior == 1)
+            if (Behavior == "LanceGuard")
             {
                 Projectile.ai[1]++;
 
                 float scale = 1;
-                if (ProjType == ProjectileID.JoustingLance || ProjType == ProjectileID.HallowJoustingLance || ProjType == ProjectileID.ShadowJoustingLance)
+                if (TexType == ProjectileID.JoustingLance || TexType == ProjectileID.HallowJoustingLance || TexType == ProjectileID.ShadowJoustingLance)
                 {
                     scale = 0.5f;
                 }
@@ -102,47 +57,42 @@ namespace WireBugMod.Projectiles.Lance
             }
         }
 
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        public override void SafeOnHit(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Main.player[Projectile.owner].SetIFrame(120);
-            Hit = true;
+            base.SafeOnHit(target, hit, damageDone);
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            Player owner = Main.player[Projectile.owner];
-            Texture2D tex = DrawUtils.GetProjTexture(ProjType);
 
+        public override bool? SafeColliding(Player owner, Vector2 TexSize, Rectangle targetHitbox)
+        {
             Vector2 unit = Projectile.rotation.ToRotationVector2();
             float point = 1;
             float dist = 0;
             //float ScaleY = (float)Math.Cos(Projectile.localAI[0]);
-            float length = tex.Size().Distance(Vector2.Zero) * owner.GetAdjustedItemScale(owner.HeldItem);
-            if (ProjType == ProjectileID.JoustingLance || ProjType == ProjectileID.HallowJoustingLance || ProjType == ProjectileID.ShadowJoustingLance)
+            float length = TexSize.Length() * owner.GetAdjustedItemScale(owner.HeldItem);
+            if (TexType == ProjectileID.JoustingLance || TexType == ProjectileID.HallowJoustingLance || TexType == ProjectileID.ShadowJoustingLance)
             {
                 dist = length / 3f;
             }
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - unit * (length / 2f - dist), Projectile.Center + unit * (length / 2f + dist), 20, ref point);
         }
-        public override bool PreDraw(ref Color lightColor)
+
+        public override void SafeDraw(Player owner, Texture2D texture, ref Color lightColor)
         {
-            Player owner = Main.player[Projectile.owner];
-            Texture2D tex = DrawUtils.GetProjTexture(ProjType);
-            Vector2 origin = tex.Size() / 2f;
+            Vector2 origin = texture.Size() / 2f;
             //float ScaleY = (float)Math.Cos(Projectile.localAI[0]);
-            if (ProjType == ProjectileID.JoustingLance || ProjType == ProjectileID.HallowJoustingLance || ProjType == ProjectileID.ShadowJoustingLance)
+            if (TexType == ProjectileID.JoustingLance || TexType == ProjectileID.HallowJoustingLance || TexType == ProjectileID.ShadowJoustingLance)
             {
-                origin = new Vector2(owner.direction < 0 ? tex.Size().X / 6f : tex.Size().X / 6f * 5f, tex.Size().Y * 5 / 6f);
+                origin = new Vector2(owner.direction < 0 ? texture.Size().X / 6f : texture.Size().X / 6f * 5f, texture.Size().Y * 5 / 6f);
             }
 
             SpriteEffects spriteEffects = owner.direction >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             float rot = owner.direction <= 0 ? Projectile.rotation + MathHelper.Pi / 4 : Projectile.rotation + MathHelper.Pi / 4 * 3;
-            if (ProjType == 699)    //¿Ö²À¹Øµ¶
+            if (TexType == 699)    //¿Ö²À¹Øµ¶
             {
                 spriteEffects = owner.direction >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
                 rot = owner.direction <= 0 ? Projectile.rotation + MathHelper.Pi / 4 * 3 : Projectile.rotation + MathHelper.Pi / 4;
             }
-            Main.spriteBatch.Draw(tex,
+            Main.spriteBatch.Draw(texture,
                 Projectile.Center - Main.screenPosition,
                 null,
                 lightColor * (1 - owner.immuneAlpha / 255f),
@@ -152,31 +102,51 @@ namespace WireBugMod.Projectiles.Lance
                 spriteEffects,
                 0);
 
-            return false;
         }
 
-        public override bool? CanDamage()
+        public override bool SafeCanHit(NPC target)
         {
-            if (Behavior == 1 && Projectile.ai[1] <= 25)
+            if (Behavior == "LanceGuard" && Projectile.ai[1] <= 25)
             {
                 return false;
             }
-            return null;
+            return true;
         }
 
         public Vector2 GetTipPos()
         {
             Player owner = Main.player[Projectile.owner];
-            Texture2D tex = DrawUtils.GetProjTexture(ProjType);
+            Texture2D tex = DrawUtils.GetProjTexture(TexType);
             float length = tex.Size().Distance(Vector2.Zero) * owner.GetAdjustedItemScale(owner.HeldItem);
             float dist = 0;
             Vector2 unit = Projectile.rotation.ToRotationVector2();
-            if (ProjType == ProjectileID.JoustingLance || ProjType == ProjectileID.HallowJoustingLance || ProjType == ProjectileID.ShadowJoustingLance)
+            if (TexType == ProjectileID.JoustingLance || TexType == ProjectileID.HallowJoustingLance || TexType == ProjectileID.ShadowJoustingLance)
             {
                 dist = length / 3f;
             }
 
             return Projectile.Center + unit * (length / 2f + dist - 5f);
+        }
+
+
+        public static void SummonSpear(Projectile ProjOwner, ref int SpearProj, float rot, float DamageScale = 0, int hitCooldown = 10, string Behavior = "")
+        {
+            if (SpearProj != -1) Main.projectile[SpearProj].Kill();
+
+            Player owner = Main.player[ProjOwner.owner];
+
+            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<LanceWeaponProj>(), owner.GetWeaponDamage(), owner.GetWeaponKnockback(), owner.whoAmI);
+            if (protmp >= 0)
+            {
+                Main.projectile[protmp].rotation = rot;
+                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
+                LanceWeaponProj modproj = Main.projectile[protmp].ModProjectile as LanceWeaponProj;
+                modproj.ProjOwner = ProjOwner.whoAmI;
+                modproj.TexType = owner.HeldItem.shoot;
+                modproj.DamageScale = DamageScale;
+                modproj.Behavior = Behavior;
+                SpearProj = protmp;
+            }
         }
     }
 }

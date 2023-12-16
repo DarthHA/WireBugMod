@@ -6,68 +6,25 @@ using Terraria;
 using Terraria.ModLoader;
 using WireBugMod.Utils;
 
-namespace WireBugMod.Projectiles.SBlade
+namespace WireBugMod.Projectiles.Weapons
 {
 
-    public class RisingDragonWeaponProj : ModProjectile
+    public class RisingDragonWeaponProj : BaseWeaponProj
     {
-        public int ItemType = -1;
-
-        public int ProjOwner = -1;
-
-        public bool Hit = false;
+        public override bool IsProjTexture => false;
 
         public Vector2 OffSet = Vector2.Zero;
 
         public override string Texture => "WireBugMod/Images/PlaceHolder";
-        public override void SetStaticDefaults()
-        {
 
-        }
-        public override void SetDefaults()
-        {
-            Projectile.width = 10;
-            Projectile.height = 10;
-            Projectile.timeLeft = 99999;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.penetrate = -1;
-            Projectile.netImportant = true;
-
-            Projectile.friendly = true;
-            Projectile.damage = 1;
-            Projectile.DamageType = DamageClass.MeleeNoSpeed;
-
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 9999;
-            Projectile.ownerHitCheck = true;
-        }
 
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
             overPlayers.Add(index);
         }
-        public override void AI()
+
+        public override void SafeAI(Player owner)
         {
-            if (ItemType == -1)
-            {
-                Projectile.Kill();
-                return;
-            }
-
-            if (ProjOwner == -1 || !Main.projectile[ProjOwner].active)
-            {
-                Projectile.Kill();
-                return;
-            }
-
-            Player owner = Main.player[Projectile.owner];
-            if (owner.IsDead())
-            {
-                Projectile.Kill();
-                return;
-            }
-
             Projectile.Center = owner.Center + new Vector2(OffSet.X * owner.direction, OffSet.Y);
             owner.itemLocation = Vector2.Zero;        //ÓÃÀ´±ÜÃâÉÁË¸
             owner.itemTime = owner.itemAnimation = 2;
@@ -78,18 +35,14 @@ namespace WireBugMod.Projectiles.SBlade
             */
         }
 
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        public override void SafeOnHit(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Main.player[Projectile.owner].SetIFrame(120);
-            Hit = true;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            Player owner = Main.player[Projectile.owner];
 
-            Texture2D tex = DrawUtils.GetItemTexture(ItemType);
-            float dist = Math.Max(tex.Width, tex.Height) * owner.GetAdjustedItemScale(owner.HeldItem);
+        public override bool? SafeColliding(Player owner, Vector2 TexSize, Rectangle targetHitbox)
+        {
+            float dist = Math.Max(TexSize.X, TexSize.Y) * owner.GetAdjustedItemScale(owner.HeldItem);
             float rot = PlayerUtils.GetRotationByDirection(Projectile.rotation, owner.direction) + owner.fullRotation;
             Vector2 UnitX = (rot + MathHelper.Pi / 4).ToRotationVector2();
             Vector2 UnitY = (rot - MathHelper.Pi / 4).ToRotationVector2();
@@ -97,23 +50,38 @@ namespace WireBugMod.Projectiles.SBlade
 
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center + UnitX * dist * 0.5f, Projectile.Center + UnitX * dist * 0.5f + UnitY * dist, dist, ref point);
         }
-        public override bool PreDraw(ref Color lightColor)
+
+        public override void SafeDraw(Player owner, Texture2D texture, ref Color lightColor)
         {
-            Player owner = Main.player[Projectile.owner];
-
-
-            Texture2D tex = DrawUtils.GetItemTexture(ItemType);
-
             SpriteEffects spriteEffects = owner.direction >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-            DrawUtils.DrawSword(tex,
+            DrawUtils.DrawSword(texture,
                 Projectile.Center - Main.screenPosition,
                 Projectile.scale * owner.GetAdjustedItemScale(owner.HeldItem),
                 Projectile.rotation + MathHelper.Pi / 4,
                 Projectile.localAI[1],
                 Projectile.localAI[0],
                 spriteEffects);
-            return false;
+        }
+
+        public static void SummonSword(Projectile ProjOwner, ref int SwordProj, float rot, float DamageScale = 0, int hitCooldown = 999, string Behavior = "")
+        {
+            if (SwordProj != -1) Main.projectile[SwordProj].Kill();
+
+            Player owner = Main.player[ProjOwner.owner];
+
+            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<RisingDragonWeaponProj>(), owner.GetWeaponDamage(), owner.GetWeaponKnockback(), owner.whoAmI);
+            if (protmp >= 0)
+            {
+                Main.projectile[protmp].rotation = rot;
+                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
+                RisingDragonWeaponProj modproj = Main.projectile[protmp].ModProjectile as RisingDragonWeaponProj;
+                modproj.ProjOwner = ProjOwner.whoAmI;
+                modproj.TexType = owner.HeldItem.type;
+                modproj.DamageScale = DamageScale;
+                modproj.Behavior = Behavior;
+                SwordProj = protmp;
+            }
         }
 
     }

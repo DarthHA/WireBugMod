@@ -45,7 +45,6 @@ namespace WireBugMod.Skills
                 modproj.StartPos = player.Center;
                 modproj.UsedBugID1 = UseBug1;
                 modproj.UsedBugID2 = UseBug2;
-
                 return true;
             }
             return false;

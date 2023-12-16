@@ -205,9 +205,13 @@ namespace WireBugMod.System
             {
                 modifiers.ModifyHurtInfo += (ref Player.HurtInfo info) => { info.SoundDisabled = true; info.DustDisabled = true; info.Dodgeable = false; };
             }
-            if (ShieldLevel == 2)
+            if (ShieldLevel == 1)
             {
-                modifiers.FinalDamage *= 0.025f;
+                modifiers.FinalDamage *= 0.2f;         //80%减伤
+            }
+            else if (ShieldLevel == 2)
+            {
+                modifiers.FinalDamage *= 0.025f;        //97.5%减伤
             }
         }
 

@@ -4,6 +4,7 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WireBugMod.Projectiles.Weapons;
 using WireBugMod.Utils;
 
 namespace WireBugMod.Projectiles.LSword
@@ -79,7 +80,7 @@ namespace WireBugMod.Projectiles.LSword
                 Projectile.ai[1]++;
                 if (Projectile.ai[1] == 1)
                 {
-                    SummonSword(owner.HeldItem.type, 0, 0, 0);
+                    LSwordWeaponProj.SummonSword(Projectile, ref SwordProj, 0);
                     Main.projectile[SwordProj].localAI[1] = PlayerUtils.GetRotationByDirection((TargetPos - StartPos).ToRotation(), owner.direction);
                 }
                 Vector2 HoverPos = TargetPos + Vector2.Normalize(TargetPos - StartPos) * HoverY;
@@ -123,10 +124,9 @@ namespace WireBugMod.Projectiles.LSword
                 owner.direction = Math.Sign(TargetPos.X - owner.Center.X);
                 if (Projectile.ai[1] == 1)
                 {
-                    SummonSword(owner.HeldItem.type, -MathHelper.Pi / 6 * 5, owner.GetWeaponDamage() * 2, owner.GetWeaponKnockback(), 10);
+                    LSwordWeaponProj.SummonSword(Projectile, ref SwordProj, -MathHelper.Pi / 6 * 5, 2, 10, "Sakura");
                     Main.projectile[SwordProj].localAI[0] = MathHelper.Pi / 6f;
                     Main.projectile[SwordProj].localAI[1] = PlayerUtils.GetRotationByDirection((TargetPos - StartPos).ToRotation(), owner.direction);
-                    (Main.projectile[SwordProj].ModProjectile as LSwordWeaponProj).Sakura = true;
                 }
                 Main.projectile[SwordProj].rotation = MathHelper.Lerp(-MathHelper.Pi / 6 * 5, -MathHelper.Pi / 6 * 5 + MathHelper.TwoPi * 2, Projectile.ai[1] / timeNeeded);
 
@@ -135,7 +135,6 @@ namespace WireBugMod.Projectiles.LSword
                 {
                     owner.velocity = Vector2.Normalize(TargetPos - StartPos) * 5;
                     owner.SetPlayerFallStart(StartPos);
-                    KillSword();
                     ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
@@ -198,30 +197,6 @@ namespace WireBugMod.Projectiles.LSword
             dust.position = Pos;
             dust.noGravity = true;
             dust.scale = scale;
-        }
-
-        private void SummonSword(int type, float rot, int damage, float kb, int hitCooldown = 999)
-        {
-            if (SwordProj != -1) KillSword();
-            Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<LSwordWeaponProj>(), damage, kb, owner.whoAmI);
-            if (protmp >= 0)
-            {
-                Main.projectile[protmp].rotation = rot;
-                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
-                LSwordWeaponProj modproj = Main.projectile[protmp].ModProjectile as LSwordWeaponProj;
-                modproj.ProjOwner = Projectile.whoAmI;
-                modproj.ItemType = type;
-                SwordProj = protmp;
-            }
-        }
-
-
-        private void KillSword()
-        {
-            if (SwordProj == -1) return;
-            Main.projectile[SwordProj].Kill();
-            SwordProj = -1;
         }
 
     }

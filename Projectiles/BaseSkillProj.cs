@@ -1,4 +1,8 @@
+using Terraria;
 using Terraria.ModLoader;
+using WireBugMod.System;
+using WireBugMod.UI;
+using WireBugMod.Utils;
 
 namespace WireBugMod.Projectiles
 {

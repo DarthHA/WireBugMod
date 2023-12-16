@@ -44,22 +44,22 @@ Projectiles: {
 	WireDashProj.DisplayName: Wire Dash
 	LanceGuardProj.DisplayName: Anchor Rage
 	LanceBugRoundingProj.DisplayName: Ironsilk
-	LanceWeaponProj.DisplayName: Lance
+	LanceWeaponProj.DisplayName: Spear
 	GPSpark.DisplayName: Guard
 	SlashDownProj.DisplayName: Hunting Edge
-	GSwordWeaponProj.DisplayName: Great Sword
+	GSwordWeaponProj.DisplayName: Sword
 	AtkPowerUpProj.DisplayName: Power Sheathe
-	BackGSwordProj.DisplayName: Great Sword
-	LSwordWeaponProj.DisplayName: Long Sword
+	BackGSwordProj.DisplayName: Sword
+	LSwordWeaponProj.DisplayName: Sword
 	SernePoseProj.DisplayName: Serne Pose
 	SakuraSlashProj.DisplayName: Silkbind Sakura Slash
 	SakuraBombProj.DisplayName: Silkbind Sakura Slash
 	SlashProj.DisplayName: Slash
-	SwingBladeProj.DisplayName: Short Blade
+	SwingBladeProj.DisplayName: Sword
 	SwingBladeRoundingProj.DisplayName: Ironsilk
 	RisingDragonProj.DisplayName: Metsu Shoryugeki
-	SBladeWeaponProj.DisplayName: Short Blade
-	RisingDragonWeaponProj.DisplayName: Short Blade
+	SBladeWeaponProj.DisplayName: Sword
+	RisingDragonWeaponProj.DisplayName: Sword
 	DamageProj.DisplayName: Damage
 	ReturningBug.DisplayName: Wirebug
 	RushAndBoomProj.DisplayName: Bullet Barrage
@@ -71,7 +71,7 @@ Projectiles: {
 	ShieldBashProj.DisplayName: Shield Bash
 	ACSlashProj.DisplayName: Adamant Charged Slash
 	ACSBugRoundingProj.DisplayName: Ironsilk
-	TwinVineProj.DisplayName: Twin Vine Proj
+	TwinVineProj.DisplayName: Twin Vine
 }
 
 WeaponType: {

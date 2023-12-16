@@ -4,6 +4,7 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WireBugMod.Projectiles.Weapons;
 using WireBugMod.Utils;
 
 namespace WireBugMod.Projectiles.GSword
@@ -32,7 +33,7 @@ namespace WireBugMod.Projectiles.GSword
         public const float HoverY = 50;
         public const float BugWireOffset = 10;
         public const float ShootSpeed = 20;
-        public const float DragSpeed = 20;
+        public const float DragSpeed = 30;
         public const float DragSpeed2 = 30;
         public const float ReturnSpeed = 20;
 
@@ -91,7 +92,7 @@ namespace WireBugMod.Projectiles.GSword
 
                 if (Projectile.ai[1] == 0)
                 {
-                    SummonSword(owner.HeldItem.type, -MathHelper.Pi / 4, 0, 0);
+                    GSwordWeaponProj.SummonSword(Projectile, ref SwordProj, -MathHelper.Pi / 4, 0);
                 }
 
                 Projectile.ai[1]++;
@@ -124,7 +125,7 @@ namespace WireBugMod.Projectiles.GSword
                 }
                 if (Projectile.ai[1] == 0)
                 {
-                    SummonSword(owner.HeldItem.type, -MathHelper.Pi / 6 * 7, owner.GetWeaponDamage() * 5, owner.GetWeaponKnockback() * 5);
+                    GSwordWeaponProj.SummonSword(Projectile, ref SwordProj, -MathHelper.Pi / 6 * 7, 5);
                 }
                 Projectile.ai[1]++;
                 Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
@@ -137,7 +138,7 @@ namespace WireBugMod.Projectiles.GSword
                 owner.fullRotationOrigin = owner.Size / 2f;
                 owner.fullRotation = Math.Clamp(Projectile.ai[1] / timeNeeded, 0, 1) * MathHelper.TwoPi * 0.25f * owner.direction;
 
-                if ((Main.projectile[SwordProj].ModProjectile as GSwordWeaponProj).Hit && !Hit)      //打中人了
+                if ((Main.projectile[SwordProj].ModProjectile as GSwordWeaponProj).HitCount > 0 && !Hit)      //打中人了
                 {
                     Hit = true;
                     owner.SetIFrame(120);
@@ -181,7 +182,7 @@ namespace WireBugMod.Projectiles.GSword
                     owner.fullRotation = 0;
                 }
 
-                if ((Main.projectile[SwordProj].ModProjectile as GSwordWeaponProj).Hit && !Hit)      //打中人了
+                if ((Main.projectile[SwordProj].ModProjectile as GSwordWeaponProj).HitCount > 0 && !Hit)      //打中人了
                 {
                     Hit = true;
                     owner.SetIFrame(120);
@@ -212,7 +213,7 @@ namespace WireBugMod.Projectiles.GSword
 
                 Main.projectile[SwordProj].rotation = MathHelper.Lerp(-MathHelper.Pi / 6 * 7, MathHelper.Pi / 6, Math.Clamp(Projectile.ai[1] / Math.Min(timeNeeded, 10), 0, 1));
 
-                if ((Main.projectile[SwordProj].ModProjectile as GSwordWeaponProj).Hit && !Hit)      //打中人了
+                if ((Main.projectile[SwordProj].ModProjectile as GSwordWeaponProj).HitCount > 0  && !Hit)      //打中人了
                 {
                     Hit = true;
                     owner.SetIFrame(120);
@@ -240,7 +241,7 @@ namespace WireBugMod.Projectiles.GSword
                 {
                     owner.fullRotation = 0;
                     owner.fullRotationOrigin = owner.Size / 2;
-                    SummonSword(owner.HeldItem.type, MathHelper.Pi / 6, 0, 0);
+                    GSwordWeaponProj.SummonSword(Projectile, ref SwordProj, MathHelper.Pi / 6, 0);
                 }
                 if (Projectile.ai[1] < 5)
                 {
@@ -269,7 +270,6 @@ namespace WireBugMod.Projectiles.GSword
                     }
                     else
                     {
-                        KillSword();
                         //ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                         Projectile.Kill();
                         return;
@@ -284,7 +284,6 @@ namespace WireBugMod.Projectiles.GSword
                 if (owner.velocity.Y > 2) owner.velocity.Y = 2;
                 if (owner.velocity.Y == 0 && owner.oldVelocity.Y == 0)       //提前落地
                 {
-                    KillSword();
                     //ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
@@ -309,7 +308,7 @@ namespace WireBugMod.Projectiles.GSword
 
                 if (Projectile.ai[1] == 1)
                 {
-                    SummonSword(owner.HeldItem.type, -MathHelper.Pi / 6 * 7, owner.GetWeaponDamage() * 10, owner.GetWeaponKnockback() * 10);
+                    GSwordWeaponProj.SummonSword(Projectile, ref SwordProj, -MathHelper.Pi / 6 * 7, 10);
                 }
 
                 int timeNeeded = Math.Clamp((int)((StartPos - DownPos).Length() / DragSpeed2), 1, 114514);
@@ -335,7 +334,6 @@ namespace WireBugMod.Projectiles.GSword
 
                 if (Projectile.ai[1] > 20)
                 {
-                    KillSword();
                     //ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
@@ -408,27 +406,5 @@ namespace WireBugMod.Projectiles.GSword
             dust.scale = scale;
         }
 
-        private void SummonSword(int type, float rot, int damage, float kb, int hitCooldown = 999)
-        {
-            if (SwordProj != -1) KillSword();
-            Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<GSwordWeaponProj>(), damage, kb, owner.whoAmI);
-            if (protmp >= 0)
-            {
-                Main.projectile[protmp].rotation = rot;
-                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
-                GSwordWeaponProj modproj = Main.projectile[protmp].ModProjectile as GSwordWeaponProj;
-                modproj.ProjOwner = Projectile.whoAmI;
-                modproj.ItemType = type;
-                SwordProj = protmp;
-            }
-        }
-
-        private void KillSword()
-        {
-            if (SwordProj == -1) return;
-            Main.projectile[SwordProj].Kill();
-            SwordProj = -1;
-        }
     }
 }

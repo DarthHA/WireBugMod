@@ -4,6 +4,7 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WireBugMod.Projectiles.Weapons;
 using WireBugMod.System;
 using WireBugMod.Utils;
 
@@ -94,7 +95,7 @@ namespace WireBugMod.Projectiles.SBlade
                 if (Projectile.ai[1] == 0)
                 {
                     owner.ClearIFrame();
-                    SummonSword(owner.HeldItem.type, MathHelper.Pi / 4, 0, 0);
+                    RisingDragonWeaponProj.SummonSword(Projectile, ref SwordProj, MathHelper.Pi / 4);
                 }
 
                 Projectile.ai[1]++;
@@ -294,7 +295,6 @@ namespace WireBugMod.Projectiles.SBlade
 
                 if (Projectile.ai[1] > 30 || (owner.velocity.Y == 0 && owner.oldVelocity.Y == 0))     //时间过长或者落地
                 {
-                    KillSword();
                     //ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
@@ -305,7 +305,7 @@ namespace WireBugMod.Projectiles.SBlade
                 Projectile.ai[1]++;
                 if (Projectile.ai[1] == 1)
                 {
-                    SummonSword(owner.HeldItem.type, Hit ? MathHelper.Pi : MathHelper.Pi / 4 * 3, owner.GetWeaponDamage() * 5, owner.GetWeaponKnockback(), 10);
+                    RisingDragonWeaponProj.SummonSword(Projectile, ref SwordProj, Hit ? MathHelper.Pi : MathHelper.Pi / 4 * 3, 5, 10);
                     Main.projectile[SwordProj].localAI[0] = MathHelper.Pi / 2f;
                 }
 
@@ -347,7 +347,6 @@ namespace WireBugMod.Projectiles.SBlade
 
                 if (Projectile.ai[1] > 20)
                 {
-                    KillSword();
                     //ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
@@ -418,21 +417,6 @@ namespace WireBugMod.Projectiles.SBlade
             dust.scale = scale;
         }
 
-        private void SummonSword(int type, float rot, int damage, float kb, int hitCooldown = 999)
-        {
-            if (SwordProj != -1) KillSword();
-            Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<RisingDragonWeaponProj>(), damage, kb, owner.whoAmI);
-            if (protmp >= 0)
-            {
-                Main.projectile[protmp].rotation = rot;
-                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
-                RisingDragonWeaponProj modproj = Main.projectile[protmp].ModProjectile as RisingDragonWeaponProj;
-                modproj.ProjOwner = Projectile.whoAmI;
-                modproj.ItemType = type;
-                SwordProj = protmp;
-            }
-        }
 
         private void KillSword()
         {

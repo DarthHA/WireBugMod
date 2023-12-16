@@ -5,6 +5,8 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WireBugMod.Projectiles.SBlade;
+using WireBugMod.Projectiles.Weapons;
+using WireBugMod.Skills;
 using WireBugMod.Utils;
 
 namespace WireBugMod.Projectiles.GSword
@@ -28,6 +30,8 @@ namespace WireBugMod.Projectiles.GSword
         public const float BugWireOffset = 10;
         public const float ShootSpeed = 20;
         public const float DragSpeed = 10;
+
+        internal int DamageScale = 0;
 
         private int SwordProj = -1;
 
@@ -83,7 +87,7 @@ namespace WireBugMod.Projectiles.GSword
 
                 if (Projectile.ai[1] == 1)
                 {
-                    SummonSword(owner.HeldItem.type, -MathHelper.Pi / 4f, 0, 0);
+                    GSwordWeaponProj.SummonSword(Projectile, ref SwordProj, -MathHelper.Pi / 4f, 0);
                     for (int i = 0; i < 7; i++)
                     {
                         float radian = 40 + Main.rand.Next(0, 30);
@@ -156,7 +160,7 @@ namespace WireBugMod.Projectiles.GSword
 
                 }
             }
-            else if (Phase == ACSlashPhase.Charge)
+            else if (Phase == ACSlashPhase.Charge)            //蓄力阶段
             {
                 Projectile.ai[1]++;
                 if (Projectile.ai[1] < 30)
@@ -168,11 +172,28 @@ namespace WireBugMod.Projectiles.GSword
                     Main.projectile[SwordProj].rotation = -MathHelper.Pi / 4f * 5;
                 }
 
-                if (Projectile.ai[1] > 40)
+                if (Projectile.ai[1] > 40)        //40为0蓄，70为1蓄，100为2蓄，120为3蓄
                 {
-                    if (Projectile.ai[1] > 120 || !owner.PressLeftInGame())
+                    if (Projectile.ai[1] == 80 || Projectile.ai[1] == 120 || Projectile.ai[1] == 160)
                     {
-                        SummonSword(owner.HeldItem.type, -MathHelper.Pi / 4f * 5, owner.GetWeaponDamage() * 10, owner.GetWeaponKnockback(), 999);
+                        DamageScale++;
+
+                        float start = MathHelper.TwoPi * Main.rand.NextFloat();
+                        for (int i = 0; i < 30; i++)
+                        {
+                            float r = start + MathHelper.TwoPi * i / 30f;
+                            int dusttmp = Dust.NewDust(owner.Center, 1, 1, DustID.BubbleBurst_White);
+                            Main.dust[dusttmp].position = owner.Center;
+                            Main.dust[dusttmp].color = Color.Orange;
+                            Main.dust[dusttmp].velocity = r.ToRotationVector2() * 5;
+                            Main.dust[dusttmp].scale = 1.5f;
+                            Main.dust[dusttmp].noGravity = true;
+                            Main.dust[dusttmp].noLight = false;
+                        }
+                    }
+                    if (Projectile.ai[1] > 160 || !owner.PressLeftInGame())
+                    {
+                        GSwordWeaponProj.SummonSword(Projectile, ref SwordProj, -MathHelper.Pi / 4 * 5, SkillDamageData.ACS.Base * SkillDamageData.ACS.Charge[DamageScale]);
                         Phase = ACSlashPhase.Slash;
                         Projectile.ai[1] = 0;
 
@@ -201,7 +222,6 @@ namespace WireBugMod.Projectiles.GSword
                 Projectile.ai[1]++;
                 if (Projectile.ai[1] > 20)
                 {
-                    KillSword();
                     ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
@@ -267,27 +287,5 @@ namespace WireBugMod.Projectiles.GSword
             dust.scale = scale;
         }
 
-        private void SummonSword(int type, float rot, int damage, float kb, int hitCooldown = 999)
-        {
-            if (SwordProj != -1) KillSword();
-            Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<GSwordWeaponProj>(), damage, kb, owner.whoAmI);
-            if (protmp >= 0)
-            {
-                Main.projectile[protmp].rotation = rot;
-                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
-                GSwordWeaponProj modproj = Main.projectile[protmp].ModProjectile as GSwordWeaponProj;
-                modproj.ProjOwner = Projectile.whoAmI;
-                modproj.ItemType = type;
-                SwordProj = protmp;
-            }
-        }
-
-        private void KillSword()
-        {
-            if (SwordProj == -1) return;
-            Main.projectile[SwordProj].Kill();
-            SwordProj = -1;
-        }
     }
 }

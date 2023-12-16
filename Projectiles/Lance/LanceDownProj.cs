@@ -4,6 +4,7 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WireBugMod.Projectiles.Weapons;
 using WireBugMod.Utils;
 
 namespace WireBugMod.Projectiles.Lance
@@ -34,7 +35,7 @@ namespace WireBugMod.Projectiles.Lance
         public const float DragSpeed2 = 30;
         public const float ReturnSpeed = 20;
 
-        public int LanceProj = -1;
+        public int SpearProj = -1;
 
 
         public LanceDownPhase Phase = LanceDownPhase.Default;
@@ -102,7 +103,7 @@ namespace WireBugMod.Projectiles.Lance
                     Phase = LanceDownPhase.Drag1;
                     Projectile.ai[1] = 0;
 
-                    SummonSpear(owner.HeldItem.shoot, (TargetPos - owner.Center).ToRotation(), owner.GetWeaponDamage(owner.HeldItem) * 20, owner.GetWeaponKnockback(owner.HeldItem), 999);
+                    LanceWeaponProj.SummonSpear(Projectile,ref SpearProj, (TargetPos - owner.Center).ToRotation(), 20, 999);
                 }
             }
             else if (Phase == LanceDownPhase.Drag1)      //第一次拉扯
@@ -181,7 +182,7 @@ namespace WireBugMod.Projectiles.Lance
                     Phase = LanceDownPhase.Drag2;
                     Projectile.ai[1] = 0;
 
-                    SummonSpear(owner.HeldItem.shoot, (DownPos - owner.Center).ToRotation(), owner.GetWeaponDamage(owner.HeldItem) * 20, owner.GetWeaponKnockback(owner.HeldItem));
+                    LanceWeaponProj.SummonSpear(Projectile, ref SpearProj, (DownPos - owner.Center).ToRotation(), 20);
                 }
             }
             else if (Phase == LanceDownPhase.Drag2)      //第二次拉扯
@@ -216,7 +217,6 @@ namespace WireBugMod.Projectiles.Lance
 
                 if (Projectile.ai[1] > 20)
                 {
-                    KillSpear();
                     ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
@@ -330,27 +330,13 @@ namespace WireBugMod.Projectiles.Lance
             dust.scale = scale;
         }
 
-        private void SummonSpear(int type, float rot, int damage, float kb, int hitCooldown = 10)
-        {
-            if (LanceProj != -1) KillSpear();
-            Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<LanceWeaponProj>(), damage, kb, owner.whoAmI);
-            if (protmp >= 0)
-            {
-                Main.projectile[protmp].rotation = rot;
-                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
-                LanceWeaponProj modproj = Main.projectile[protmp].ModProjectile as LanceWeaponProj;
-                modproj.ProjOwner = Projectile.whoAmI;
-                modproj.ProjType = type;
-                LanceProj = protmp;
-            }
-        }
+
 
         private void KillSpear()
         {
-            if (LanceProj == -1) return;
-            Main.projectile[LanceProj].Kill();
-            LanceProj = -1;
+            if (SpearProj == -1) return;
+            Main.projectile[SpearProj].Kill();
+            SpearProj = -1;
         }
     }
 }

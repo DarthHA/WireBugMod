@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WireBugMod.Projectiles.Lance;
+using WireBugMod.Projectiles.Weapons;
 using WireBugMod.System;
 using WireBugMod.Utils;
 
@@ -30,7 +31,7 @@ namespace WireBugMod.Projectiles.Lance
         public const float BugWireOffset = 10;
         public const float MoveSpeed = 20;
 
-        public int LanceProj = -1;
+        public int SpearProj = -1;
 
         private Vector2 StartPos = Vector2.Zero;
 
@@ -82,8 +83,8 @@ namespace WireBugMod.Projectiles.Lance
                 if (Projectile.ai[1] == 1)
                 {
                     Vector2 RotVec = MovingRotation.ToRotationVector2();
-                    SummonSpear(owner.HeldItem.shoot, (-RotVec).ToRotation(), owner.GetWeaponDamage() * 3, owner.GetWeaponKnockback());
-                    (Main.projectile[LanceProj].ModProjectile as LanceWeaponProj).OffSet = 20;
+                    LanceWeaponProj.SummonSpear(Projectile, ref SpearProj, (-RotVec).ToRotation(), 3);
+                    (Main.projectile[SpearProj].ModProjectile as LanceWeaponProj).OffSet = 20;
                 }
                 owner.direction = Math.Sign(MovingRotation.ToRotationVector2().X);
                 owner.velocity *= 0.99f;
@@ -239,27 +240,12 @@ namespace WireBugMod.Projectiles.Lance
             dust.scale = scale;
         }
 
-        private void SummonSpear(int type, float rot, int damage, float kb, int hitCooldown = 10)
-        {
-            if (LanceProj != -1) KillSpear();
-            Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<LanceWeaponProj>(), damage, kb, owner.whoAmI);
-            if (protmp >= 0)
-            {
-                Main.projectile[protmp].rotation = rot;
-                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
-                LanceWeaponProj modproj = Main.projectile[protmp].ModProjectile as LanceWeaponProj;
-                modproj.ProjOwner = Projectile.whoAmI;
-                modproj.ProjType = type;
-                LanceProj = protmp;
-            }
-        }
 
         private void KillSpear()
         {
-            if (LanceProj == -1) return;
-            Main.projectile[LanceProj].Kill();
-            LanceProj = -1;
+            if (SpearProj == -1) return;
+            Main.projectile[SpearProj].Kill();
+            SpearProj = -1;
         }
     }
 }

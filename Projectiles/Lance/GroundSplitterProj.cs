@@ -4,6 +4,7 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WireBugMod.Projectiles.Weapons;
 using WireBugMod.Utils;
 
 namespace WireBugMod.Projectiles.Lance
@@ -27,7 +28,7 @@ namespace WireBugMod.Projectiles.Lance
         public const float DragSpeed = 20;
         public const float ReturnSpeed = 20;
 
-        private int LanceProj = -1;
+        private int SpearProj = -1;
 
         public GroundSplitterPhase Phase = GroundSplitterPhase.Default;
         public override string Texture => "WireBugMod/Images/PlaceHolder";
@@ -81,7 +82,7 @@ namespace WireBugMod.Projectiles.Lance
 
                 if (Projectile.ai[1] == 1)
                 {
-                    SummonSpear(owner.HeldItem.shoot, PlayerUtils.GetRotationByDirection(0, owner.direction), owner.GetWeaponDamage() * 2, owner.GetWeaponKnockback(), 999);
+                    LanceWeaponProj.SummonSpear(Projectile, ref SpearProj, PlayerUtils.GetRotationByDirection(0, owner.direction), 2, 999);
                 }
 
                 float TargetRot = (TargetPos - StartPos).ToRotation();
@@ -91,7 +92,7 @@ namespace WireBugMod.Projectiles.Lance
                 Projectile.spriteDirection = Math.Sign(HoverPos.X - StartPos.X);
                 owner.direction = Math.Sign(TargetPos.X - owner.Center.X);
 
-                Main.projectile[LanceProj].rotation = MathHelper.Lerp(PlayerUtils.GetRotationByDirection(0, owner.direction), PlayerUtils.GetRotationByDirection(MathHelper.Pi / 6 * 7, owner.direction), Projectile.ai[1] / timeNeeded);
+                Main.projectile[SpearProj].rotation = MathHelper.Lerp(PlayerUtils.GetRotationByDirection(0, owner.direction), PlayerUtils.GetRotationByDirection(MathHelper.Pi / 6 * 7, owner.direction), Projectile.ai[1] / timeNeeded);
 
                 if (Projectile.ai[1] >= timeNeeded)
                 {
@@ -103,7 +104,7 @@ namespace WireBugMod.Projectiles.Lance
                     Projectile.Center = HoverPos;
                     Phase = GroundSplitterPhase.Drag;
                     Projectile.ai[1] = 0;
-                    Main.projectile[LanceProj].rotation = PlayerUtils.GetRotationByDirection(MathHelper.Pi / 6 * 7, owner.direction);
+                    Main.projectile[SpearProj].rotation = PlayerUtils.GetRotationByDirection(MathHelper.Pi / 6 * 7, owner.direction);
                 }
             }
             else if (Phase == GroundSplitterPhase.Drag)      //拉扯
@@ -126,7 +127,7 @@ namespace WireBugMod.Projectiles.Lance
                 owner.direction = Math.Sign(TargetPos.X - owner.Center.X);
 
                 //获取矛尖坐标
-                Vector2 SpearTip = (Main.projectile[LanceProj].ModProjectile as LanceWeaponProj).GetTipPos();
+                Vector2 SpearTip = (Main.projectile[SpearProj].ModProjectile as LanceWeaponProj).GetTipPos();
                 bool Collided = Projectile.ai[1] < timeNeeded * 0.25f || Collision.SolidTiles(SpearTip - new Vector2(5, 5), 10, 10);
 
                 if (Collided)
@@ -142,11 +143,11 @@ namespace WireBugMod.Projectiles.Lance
 
                 if (Projectile.ai[1] < timeNeeded * 0.25f)
                 {
-                    Main.projectile[LanceProj].rotation = MathHelper.Lerp(PlayerUtils.GetRotationByDirection(MathHelper.Pi / 6 * 7, owner.direction), PlayerUtils.GetRotationByDirection(MathHelper.Pi / 4 * 3, owner.direction), Projectile.ai[1] / (timeNeeded * 0.25f));
+                    Main.projectile[SpearProj].rotation = MathHelper.Lerp(PlayerUtils.GetRotationByDirection(MathHelper.Pi / 6 * 7, owner.direction), PlayerUtils.GetRotationByDirection(MathHelper.Pi / 4 * 3, owner.direction), Projectile.ai[1] / (timeNeeded * 0.25f));
                 }
                 else
                 {
-                    Main.projectile[LanceProj].rotation = PlayerUtils.GetRotationByDirection(MathHelper.Pi / 4 * 3, owner.direction);
+                    Main.projectile[SpearProj].rotation = PlayerUtils.GetRotationByDirection(MathHelper.Pi / 4 * 3, owner.direction);
                 }
 
 
@@ -170,16 +171,16 @@ namespace WireBugMod.Projectiles.Lance
                     float t = (float)Math.Pow(Projectile.ai[1] / 10f, 2);
                     if (owner.direction >= 0)          //方向算法的优劣弧修正
                     {
-                        Main.projectile[LanceProj].rotation = MathHelper.Lerp(MathHelper.Pi / 4 * 3, -MathHelper.Pi / 4, t);
+                        Main.projectile[SpearProj].rotation = MathHelper.Lerp(MathHelper.Pi / 4 * 3, -MathHelper.Pi / 4, t);
                     }
                     else
                     {
-                        Main.projectile[LanceProj].rotation = MathHelper.Lerp(MathHelper.Pi / 4, MathHelper.Pi / 4 * 5, t);
+                        Main.projectile[SpearProj].rotation = MathHelper.Lerp(MathHelper.Pi / 4, MathHelper.Pi / 4 * 5, t);
                     }
 
                     for (int i = 0; i < 2; i++)
                     {
-                        Vector2 SpearTip = (Main.projectile[LanceProj].ModProjectile as LanceWeaponProj).GetTipPos();
+                        Vector2 SpearTip = (Main.projectile[SpearProj].ModProjectile as LanceWeaponProj).GetTipPos();
                         Dust dust = Dust.NewDustDirect(SpearTip - new Vector2(3, 3), 6, 6, DustID.CopperCoin);
                         dust.velocity = new Vector2(Main.rand.Next(-5, 6), -4);
                         dust.noGravity = false;
@@ -188,11 +189,10 @@ namespace WireBugMod.Projectiles.Lance
                 }
                 else
                 {
-                    Main.projectile[LanceProj].rotation = PlayerUtils.GetRotationByDirection(-MathHelper.Pi / 4, owner.direction);
+                    Main.projectile[SpearProj].rotation = PlayerUtils.GetRotationByDirection(-MathHelper.Pi / 4, owner.direction);
                 }
                 if (Projectile.ai[1] >= 40)
                 {
-                    KillSpear();
                     ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
@@ -257,27 +257,5 @@ namespace WireBugMod.Projectiles.Lance
             dust.scale = scale;
         }
 
-        private void SummonSpear(int type, float rot, int damage, float kb, int hitCooldown = 10)
-        {
-            if (LanceProj != -1) KillSpear();
-            Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<LanceWeaponProj>(), damage, kb, owner.whoAmI);
-            if (protmp >= 0)
-            {
-                Main.projectile[protmp].rotation = rot;
-                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
-                LanceWeaponProj modproj = Main.projectile[protmp].ModProjectile as LanceWeaponProj;
-                modproj.ProjOwner = Projectile.whoAmI;
-                modproj.ProjType = type;
-                LanceProj = protmp;
-            }
-        }
-
-        private void KillSpear()
-        {
-            if (LanceProj == -1) return;
-            Main.projectile[LanceProj].Kill();
-            LanceProj = -1;
-        }
     }
 }

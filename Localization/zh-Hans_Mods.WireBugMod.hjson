@@ -44,22 +44,22 @@ Projectiles: {
 	WireDashProj.DisplayName: 翔虫冲刺
 	LanceGuardProj.DisplayName: 锚泊蓄能
 	LanceBugRoundingProj.DisplayName: 铁虫丝
-	LanceWeaponProj.DisplayName: 长枪
+	LanceWeaponProj.DisplayName: 长矛
 	GPSpark.DisplayName: 格挡
 	SlashDownProj.DisplayName: 狩猎锋刃
-	GSwordWeaponProj.DisplayName: 大剑
+	GSwordWeaponProj.DisplayName: 剑
 	AtkPowerUpProj.DisplayName: 强化纳刀
-	BackGSwordProj.DisplayName: 大剑
-	LSwordWeaponProj.DisplayName: 太刀
+	BackGSwordProj.DisplayName: 剑
+	LSwordWeaponProj.DisplayName: 剑
 	SernePoseProj.DisplayName: 水月架势
 	SakuraSlashProj.DisplayName: 樱花铁虫气刃斩
 	SakuraBombProj.DisplayName: 樱花铁虫气刃斩
 	SlashProj.DisplayName: 斩击
-	SwingBladeProj.DisplayName: 单手剑
+	SwingBladeProj.DisplayName: 剑
 	SwingBladeRoundingProj.DisplayName: 铁虫丝
 	RisingDragonProj.DisplayName: 灭·升龙击
-	SBladeWeaponProj.DisplayName: 单手剑
-	RisingDragonWeaponProj.DisplayName: 单手剑
+	SBladeWeaponProj.DisplayName: 剑
+	RisingDragonWeaponProj.DisplayName: 剑
 	DamageProj.DisplayName: 伤害
 	ReturningBug.DisplayName: 翔虫
 	RushAndBoomProj.DisplayName: 超级全弹发射
@@ -71,7 +71,7 @@ Projectiles: {
 	ShieldBashProj.DisplayName: 盾牌猛击
 	ACSlashProj.DisplayName: 金刚蓄力斩
 	ACSBugRoundingProj.DisplayName: 铁虫丝
-	// TwinVineProj.DisplayName: Twin Vine Proj
+	TwinVineProj.DisplayName: 决斗缠绕
 }
 
 WeaponType: {

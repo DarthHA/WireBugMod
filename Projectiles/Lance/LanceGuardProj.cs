@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WireBugMod.Projectiles.Weapons;
 using WireBugMod.System;
 using WireBugMod.Utils;
 
@@ -24,7 +25,7 @@ namespace WireBugMod.Projectiles.Lance
 
         const float ShieldOffsetX = 12f;
 
-        public int LanceProj = -1;
+        public int SpearProj = -1;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 3;
@@ -81,7 +82,7 @@ namespace WireBugMod.Projectiles.Lance
                     LanceBugRoundingProj.SummonProj(owner, Vector2.Zero, Color.Cyan, radian, rot, inip, 0.15f, vel, scale, owner.direction);
                 }
                 owner.ClearIFrame();
-                SummonSpear(owner.HeldItem.shoot, (Main.MouseWorld - owner.Center).ToRotation(), 0, 0, 999);
+                LanceWeaponProj.SummonSpear(Projectile, ref SpearProj, (Main.MouseWorld - owner.Center).ToRotation());
             }
             //60Ö¡¼Ü¶Ü£¬GPºóÇÐ»»Îª40Ö¡
 
@@ -109,11 +110,11 @@ namespace WireBugMod.Projectiles.Lance
                     ActivatingGP = false;
                     ShieldLevel = 0;
                     float rot = (Main.MouseWorld - owner.Center).ToRotation();
-                    if (LanceProj != -1)
+                    if (SpearProj != -1)
                     {
-                        rot = Main.projectile[LanceProj].rotation;
+                        rot = Main.projectile[SpearProj].rotation;
                     }
-                    SummonShoot(owner.HeldItem.shoot, rot, owner.GetWeaponDamage() * 5, owner.GetWeaponKnockback(), 10);
+                    LanceWeaponProj.SummonSpear(Projectile, ref SpearProj, (Main.MouseWorld - owner.Center).ToRotation(), 5, 10, "LanceGuard");
 
                     for (int i = 0; i < 4; i++)
                     {
@@ -139,11 +140,8 @@ namespace WireBugMod.Projectiles.Lance
             }
             else if (Phase == LanceGuardPhase.Default)
             {
-                KillSpear();
                 Projectile.Kill();
             }
-
-
         }
 
 
@@ -188,46 +186,5 @@ namespace WireBugMod.Projectiles.Lance
             dust.scale = scale;
         }
 
-
-        private void SummonSpear(int type, float rot, int damage, float kb, int hitCooldown = 10)
-        {
-            if (LanceProj != -1) KillSpear();
-            Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<LanceWeaponProj>(), damage, kb, owner.whoAmI);
-            if (protmp >= 0)
-            {
-                Main.projectile[protmp].rotation = rot;
-                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
-                LanceWeaponProj modproj = Main.projectile[protmp].ModProjectile as LanceWeaponProj;
-                modproj.ProjOwner = Projectile.whoAmI;
-                modproj.ProjType = type;
-                LanceProj = protmp;
-            }
-        }
-
-        private void SummonShoot(int type, float rot, int damage, float kb, int hitCooldown = 10)
-        {
-            if (LanceProj != -1) KillSpear();
-            Player owner = Main.player[Projectile.owner];
-            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<LanceWeaponProj>(), damage, kb, owner.whoAmI);
-            if (protmp >= 0)
-            {
-                Main.projectile[protmp].rotation = rot;
-                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
-                LanceWeaponProj modproj = Main.projectile[protmp].ModProjectile as LanceWeaponProj;
-                modproj.ProjOwner = Projectile.whoAmI;
-                modproj.ProjType = type;
-                modproj.Behavior = 1;
-                LanceProj = protmp;
-
-            }
-        }
-
-        private void KillSpear()
-        {
-            if (LanceProj == -1) return;
-            Main.projectile[LanceProj].Kill();
-            LanceProj = -1;
-        }
     }
 }

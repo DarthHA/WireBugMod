@@ -4,51 +4,21 @@ using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
+using WireBugMod.Projectiles.LSword;
 using WireBugMod.Utils;
 
-namespace WireBugMod.Projectiles.LSword
+namespace WireBugMod.Projectiles.Weapons
 {
     /// <summary>
     /// 自带方向
     /// </summary>
-    public class LSwordWeaponProj : ModProjectile
+    public class LSwordWeaponProj : BaseWeaponProj
     {
-        public int ItemType = -1;
-
-        public int ProjOwner = -1;
-
-        public bool HasTrail = false;
-
-        public bool Hit = false;
-
-        public bool Sakura = false;
-
-        private int HitNumber = 0;
+        public override bool IsProjTexture => false;
 
         public float[] OldRot = new float[5];
-        public override string Texture => "WireBugMod/Images/PlaceHolder";
-        public override void SetStaticDefaults()
-        {
 
-        }
-        public override void SetDefaults()
-        {
-            Projectile.width = 10;
-            Projectile.height = 10;
-            Projectile.timeLeft = 99999;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.penetrate = -1;
-            Projectile.netImportant = true;
-
-            Projectile.friendly = true;
-            Projectile.damage = 1;
-            Projectile.DamageType = DamageClass.MeleeNoSpeed;
-
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 9999;
-            Projectile.ownerHitCheck = true;
-        }
+        public bool HasTrail = false;
 
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
@@ -57,26 +27,8 @@ namespace WireBugMod.Projectiles.LSword
                 overPlayers.Add(index);
             }
         }
-        public override void AI()
+        public override void SafeAI(Player owner)
         {
-            if (ItemType == -1)
-            {
-                Projectile.Kill();
-                return;
-            }
-
-            if (ProjOwner == -1 || !Main.projectile[ProjOwner].active)
-            {
-                Projectile.Kill();
-                return;
-            }
-
-            Player owner = Main.player[Projectile.owner];
-            if (owner.IsDead())
-            {
-                Projectile.Kill();
-                return;
-            }
             //owner.heldProj = Projectile.whoAmI;            //怎么回事呢
             Projectile.Center = owner.Center;
             owner.itemLocation = Vector2.Zero;        //用来避免闪烁
@@ -104,52 +56,41 @@ namespace WireBugMod.Projectiles.LSword
             }
         }
 
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        public override void SafeOnHit(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Main.player[Projectile.owner].SetIFrame(120);
-            if (Sakura)
+            if (Behavior == "Sakura")
             {
-                HitNumber++;
-                if (HitNumber <= 2)
+                if (HitCount <= 2)
                 {
                     Vector2 SpawnPos = target.position + new Vector2(Main.rand.Next(target.width), Main.rand.Next(target.height));
                     SlashProj.Summon(Main.player[Projectile.owner], SpawnPos, 0, 0);
                 }
-                if (!Hit)
+                if (HitCount == 1)
                 {
                     int protmp = Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<SakuraBombProj>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     Main.projectile[protmp].ai[0] = target.whoAmI;
                 }
             }
-            Hit = true;
-
-
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            Player owner = Main.player[Projectile.owner];
 
-            Texture2D tex = DrawUtils.GetItemTexture(ItemType);
-            float dist = Math.Max(tex.Width, tex.Height) * owner.GetAdjustedItemScale(owner.HeldItem);
-            float rot = GetRotByDir(Projectile.rotation, owner.direction) + owner.fullRotation;
+        public override bool? SafeColliding(Player owner, Vector2 TexSize, Rectangle targetHitbox)
+        {
+            float dist = Math.Max(TexSize.X, TexSize.Y) * owner.GetAdjustedItemScale(owner.HeldItem);
+            float rot = PlayerUtils.GetRotationByDirection(Projectile.rotation, owner.direction) + owner.fullRotation;
             Vector2 UnitX = (rot + MathHelper.Pi / 4).ToRotationVector2();
             Vector2 UnitY = (rot - MathHelper.Pi / 4).ToRotationVector2();
             float point = 1;
 
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center + UnitX * dist * 0.5f, Projectile.Center + UnitX * dist * 0.5f + UnitY * dist, dist, ref point);
         }
-        public override bool PreDraw(ref Color lightColor)
+
+        public override void SafeDraw(Player owner, Texture2D texture, ref Color lightColor)
         {
-            Player owner = Main.player[Projectile.owner];
-
-
-            Texture2D tex = DrawUtils.GetItemTexture(ItemType);
-
             if (HasTrail)
             {
                 Texture2D blob = ModContent.Request<Texture2D>("WireBugMod/Images/BlobGlow").Value;
-                float len = tex.Size().Distance(Vector2.Zero);
+                float len = texture.Size().Distance(Vector2.Zero);
 
                 List<CustomVertexInfo> vertexInfos = new();
                 for (int i = 0; i < 4; i++)
@@ -169,37 +110,43 @@ namespace WireBugMod.Projectiles.LSword
 
             SpriteEffects spriteEffects = owner.direction >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-            DrawUtils.DrawSword(tex,
+            DrawUtils.DrawSword(texture,
                 Projectile.Center - Main.screenPosition,
                 Projectile.scale * owner.GetAdjustedItemScale(owner.HeldItem),
                 Projectile.rotation + MathHelper.Pi / 4,
                 Projectile.localAI[1],
                 Projectile.localAI[0],
                 spriteEffects);
-            return false;
         }
 
 
-        private float GetRotByDir(float rot, int dir)
-        {
-            if (dir > 0)
-            {
-                return rot;
-            }
-            else
-            {
-                Vector2 temp = rot.ToRotationVector2();
-                temp.X = -temp.X;
-                rot = temp.ToRotation();
-                return rot;
-            }
-        }
 
         private Vector2 GetR(float rot, int dir, float rotZ, float dist)
         {
-            Vector2 result = GetRotByDir(rot, dir).ToRotationVector2() * dist;
+            Vector2 result = PlayerUtils.GetRotationByDirection(rot, dir).ToRotationVector2() * dist;
             result.Y *= (float)Math.Sin(rotZ);
             return result;
         }
+
+        public static void SummonSword(Projectile ProjOwner, ref int SwordProj, float rot, float DamageScale = 0, int hitCooldown = 999, string Behavior = "")
+        {
+            if (SwordProj != -1) Main.projectile[SwordProj].Kill();
+
+            Player owner = Main.player[ProjOwner.owner];
+
+            int protmp = Projectile.NewProjectile(owner.GetSource_ItemUse_WithPotentialAmmo(owner.HeldItem, 0, "WireBug"), owner.Center, Vector2.Zero, ModContent.ProjectileType<LSwordWeaponProj>(), owner.GetWeaponDamage(), owner.GetWeaponKnockback(), owner.whoAmI);
+            if (protmp >= 0)
+            {
+                Main.projectile[protmp].rotation = rot;
+                Main.projectile[protmp].localNPCHitCooldown = hitCooldown;
+                LSwordWeaponProj modproj = Main.projectile[protmp].ModProjectile as LSwordWeaponProj;
+                modproj.ProjOwner = ProjOwner.whoAmI;
+                modproj.TexType = owner.HeldItem.type;
+                modproj.DamageScale = DamageScale;
+                modproj.Behavior = Behavior;
+                SwordProj = protmp;
+            }
+        }
+
     }
 }
