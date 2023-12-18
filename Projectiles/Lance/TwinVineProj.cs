@@ -109,7 +109,7 @@ namespace WireBugMod.Projectiles.SBlade
                 {
                     for (int i = 0; i < 2; i++)
                     {
-                        GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
+                        SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
                     }
                 }
                 if (Target == -1 || !Main.npc[Target].active || !Main.npc[Target].CanBeChasedBy() || Main.npc[Target].Distance(owner.Center) > 1500)
@@ -129,7 +129,7 @@ namespace WireBugMod.Projectiles.SBlade
                     Projectile.rotation = PlayerUtils.GetRotationByDirection(SavedRot, -1) + Main.npc[Target].rotation;
                 }
 
-                if (!owner.GetModPlayer<WireBugPlayer>().LockInput && !owner.CCed && !owner.ItemAnimationActive && !owner.shimmerWet && !UIManager.Visible)        //可以操作,没有在微光里,没有被定住,且没有同时使用物品，没有打开翔虫UI，不在快速切换冷却时间内
+                if (!owner.GetModPlayer<WireBugPlayer>().LockInput && !owner.CCed && !owner.ItemAnimationActive && !owner.shimmerWet && !UIManager.Visible)        //可以操作,没有在微光里,没有被定住,且没有同时使用物品，没有打开翔虫UI
                 {
                     if (owner.GetSkillKeyJPStatus("TwinVine").HasValue && owner.GetSkillKeyJPStatus("TwinVine").Value)
                     {
@@ -170,7 +170,7 @@ namespace WireBugMod.Projectiles.SBlade
                 {
                     for (int i = 0; i < 2; i++)
                     {
-                        GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
+                        SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
                     }
                 }
                 if (Target == -1 || !Main.npc[Target].active || !Main.npc[Target].CanBeChasedBy() || Main.npc[Target].Distance(owner.Center) > 1500)
@@ -192,7 +192,7 @@ namespace WireBugMod.Projectiles.SBlade
 
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                    SkillUtils.GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
 
                 if (owner.GetSkillKeyJPStatus("TwinVine").HasValue && owner.GetSkillKeyJPStatus("TwinVine").Value)
@@ -264,15 +264,6 @@ namespace WireBugMod.Projectiles.SBlade
             return false;
         }
 
-        private void GenDust(Vector2 Pos, float Speed, float scale)
-        {
-            Dust dust = Dust.NewDustDirect(Pos, 1, 1, DustID.WhiteTorch);
-            dust.color = Color.Cyan;
-            dust.velocity = (MathHelper.TwoPi * Main.rand.NextFloat()).ToRotationVector2() * Speed;
-            dust.position = Pos;
-            dust.noGravity = true;
-            dust.scale = scale;
-        }
 
         public override bool? CanHitNPC(NPC target)
         {

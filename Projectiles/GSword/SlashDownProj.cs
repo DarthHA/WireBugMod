@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WireBugMod.Projectiles.Weapons;
+using WireBugMod.Skills;
 using WireBugMod.Utils;
 
 namespace WireBugMod.Projectiles.GSword
@@ -38,6 +39,8 @@ namespace WireBugMod.Projectiles.GSword
         public const float ReturnSpeed = 20;
 
         public int SwordProj = -1;
+
+        internal int DamageScale = 0;
 
         public bool Hit = false;
 
@@ -77,7 +80,7 @@ namespace WireBugMod.Projectiles.GSword
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
+                    SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
                 }
             }
 
@@ -87,7 +90,7 @@ namespace WireBugMod.Projectiles.GSword
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                    SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
 
                 if (Projectile.ai[1] == 0)
@@ -108,7 +111,7 @@ namespace WireBugMod.Projectiles.GSword
                 {
                     for (int i = 0; i < 20; i++)
                     {
-                        GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(10), 1 + Main.rand.NextFloat() * 0.5f);
+                        SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(10), 1 + Main.rand.NextFloat() * 0.5f);
                     }
                     StartPos = owner.Center;
                     Projectile.Center = HoverPos;
@@ -121,13 +124,13 @@ namespace WireBugMod.Projectiles.GSword
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
-                }
-                if (Projectile.ai[1] == 0)
-                {
-                    GSwordWeaponProj.SummonSword(Projectile, ref SwordProj, -MathHelper.Pi / 6 * 7, 5);
+                    SkillUtils.GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
+                if (Projectile.ai[1] == 1)
+                {
+                    GSwordWeaponProj.SummonSword(Projectile, ref SwordProj, -MathHelper.Pi / 6 * 7, SkillDamageData.SlashDown.Base1);
+                }
                 Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
                 Projectile.Center = HoverPos;
                 int timeNeeded = Math.Clamp((int)((StartPos - TargetPos).Length() / DragSpeed), 1, 114514);
@@ -169,6 +172,7 @@ namespace WireBugMod.Projectiles.GSword
             else if (Phase == SlashDownPhase.Pause1)       //¶ÌÔÝÔÝÍ£+Ðý×ª,20Ö¡
             {
                 Projectile.ai[1]++;
+
                 //owner.velocity = Vector2.Zero;
                 if (Projectile.ai[1] < 20)
                 {
@@ -205,6 +209,11 @@ namespace WireBugMod.Projectiles.GSword
             else if (Phase == SlashDownPhase.Falling)      //ÅüÂä
             {
                 Projectile.ai[1]++;
+
+                if (Projectile.ai[1] == 1)
+                {
+                    GSwordWeaponProj.SummonSword(Projectile, ref SwordProj, -MathHelper.Pi / 6 * 7, SkillDamageData.SlashDown.Base2);
+                }
 
                 int timeNeeded = Math.Clamp((int)((StartPos - DownPos).Length() / DragSpeed2), 1, 114514);
                 owner.velocity = Vector2.Normalize(DownPos - owner.Center) * (DragSpeed2 - 1);
@@ -288,6 +297,28 @@ namespace WireBugMod.Projectiles.GSword
                     Projectile.Kill();
                     return;
                 }
+
+                if (Projectile.ai[1] > 10)        //10Îª0Ðî£¬30Îª1Ðî£¬50Îª2Ðî£¬70Îª3Ðî
+                {
+                    if (Projectile.ai[1] == 30 || Projectile.ai[1] == 50 || Projectile.ai[1] == 70)
+                    {
+                        DamageScale++;
+
+                        float start = MathHelper.TwoPi * Main.rand.NextFloat();
+                        for (int i = 0; i < 30; i++)
+                        {
+                            float r = start + MathHelper.TwoPi * i / 30f;
+                            int dusttmp = Dust.NewDust(owner.Center, 1, 1, DustID.BubbleBurst_White);
+                            Main.dust[dusttmp].position = owner.Center;
+                            Main.dust[dusttmp].color = Color.Orange;
+                            Main.dust[dusttmp].velocity = r.ToRotationVector2() * 5;
+                            Main.dust[dusttmp].scale = 1.5f;
+                            Main.dust[dusttmp].noGravity = true;
+                            Main.dust[dusttmp].noLight = false;
+                        }
+                    }
+                }
+
                 if (Projectile.ai[1] > 10 && !owner.PressLeftInGame())     //ÏÂÅü
                 {
                     owner.SetIFrame(120);
@@ -304,11 +335,18 @@ namespace WireBugMod.Projectiles.GSword
             else if (Phase == SlashDownPhase.ChargeSlash)       //ÐîÁ¦ÅüÂä
             {
                 owner.SetIFrame(120);
-                Projectile.ai[1]++;
 
+                if (SleepTimer > 0)
+                {
+                    owner.velocity = Vector2.Normalize(DownPos - owner.Center);
+                    return;
+                }
+
+                Projectile.ai[1]++;
+                
                 if (Projectile.ai[1] == 1)
                 {
-                    GSwordWeaponProj.SummonSword(Projectile, ref SwordProj, -MathHelper.Pi / 6 * 7, 10);
+                    GSwordWeaponProj.SummonSword(Projectile, ref SwordProj, -MathHelper.Pi / 6 * 7, SkillDamageData.SlashDown.Base * SkillDamageData.SlashDown.Charge[DamageScale], 999, "SlashDown");
                 }
 
                 int timeNeeded = Math.Clamp((int)((StartPos - DownPos).Length() / DragSpeed2), 1, 114514);
@@ -396,15 +434,6 @@ namespace WireBugMod.Projectiles.GSword
             Main.player[Projectile.owner].fullRotation = 0;
         }
 
-        private void GenDust(Vector2 Pos, float Speed, float scale)
-        {
-            Dust dust = Dust.NewDustDirect(Pos, 1, 1, DustID.WhiteTorch);
-            dust.color = Color.Cyan;
-            dust.velocity = (MathHelper.TwoPi * Main.rand.NextFloat()).ToRotationVector2() * Speed;
-            dust.position = Pos;
-            dust.noGravity = true;
-            dust.scale = scale;
-        }
 
     }
 }

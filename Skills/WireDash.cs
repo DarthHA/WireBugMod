@@ -46,10 +46,7 @@ namespace WireBugMod.Skills
                 modproj.StartPos = player.Center;
                 modproj.UsedBugID1 = UseBug1;
                 modproj.UsedBugID2 = UseBug2;
-                if (player.immune)
-                {
-                    player.SetIFrame(ImmumeFrame);
-                }
+                
                 return true;
             }
             return false;

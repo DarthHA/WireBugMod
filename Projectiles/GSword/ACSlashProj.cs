@@ -25,6 +25,7 @@ namespace WireBugMod.Projectiles.GSword
         public Vector2 TargetPos = Vector2.Zero;
         public Vector2 StartPos = Vector2.Zero;
         public bool Connected = true;
+        public bool Disappear = false;
 
         public const float HoverY = 50;
         public const float BugWireOffset = 10;
@@ -71,7 +72,7 @@ namespace WireBugMod.Projectiles.GSword
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
+                    SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
                 }
             }
 
@@ -81,7 +82,7 @@ namespace WireBugMod.Projectiles.GSword
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                    SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
 
@@ -113,7 +114,7 @@ namespace WireBugMod.Projectiles.GSword
                 {
                     for (int i = 0; i < 20; i++)
                     {
-                        GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(10), 1 + Main.rand.NextFloat() * 0.5f);
+                        SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(10), 1 + Main.rand.NextFloat() * 0.5f);
                     }
                     StartPos = owner.Center;
                     Projectile.Center = HoverPos;
@@ -126,7 +127,7 @@ namespace WireBugMod.Projectiles.GSword
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                    SkillUtils.GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
                 float TargetRot = (TargetPos - StartPos).ToRotation();
@@ -157,7 +158,8 @@ namespace WireBugMod.Projectiles.GSword
                     Phase = ACSlashPhase.Charge;
                     owner.SetPlayerFallStart(StartPos);
                     Connected = false;
-
+                    Disappear = true;
+                    ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                 }
             }
             else if (Phase == ACSlashPhase.Charge)            //蓄力阶段
@@ -193,7 +195,6 @@ namespace WireBugMod.Projectiles.GSword
                     }
                     if (Projectile.ai[1] > 160 || !owner.PressLeftInGame())
                     {
-                        GSwordWeaponProj.SummonSword(Projectile, ref SwordProj, -MathHelper.Pi / 4 * 5, SkillDamageData.ACS.Base * SkillDamageData.ACS.Charge[DamageScale]);
                         Phase = ACSlashPhase.Slash;
                         Projectile.ai[1] = 0;
 
@@ -209,12 +210,21 @@ namespace WireBugMod.Projectiles.GSword
             }
             else if (Phase == ACSlashPhase.Slash)
             {
+                if (SleepTimer > 0)
+                {
+                    return;
+                }
                 Projectile.ai[1]++;
-                Main.projectile[SwordProj].rotation = MathHelper.Lerp(-MathHelper.Pi / 4f * 5, MathHelper.Pi / 12f, (float)Math.Pow(Projectile.ai[1] / 15f, 2));
+                if (Projectile.ai[1] == 8)
+                {
+                    GSwordWeaponProj.SummonSword(Projectile, ref SwordProj, -MathHelper.Pi / 4 * 5, SkillDamageData.ACS.Base * SkillDamageData.ACS.Charge[DamageScale], 999, "ACSlash");
+                }
+                Main.projectile[SwordProj].rotation = MathHelper.Lerp(-MathHelper.Pi / 4 * 5, MathHelper.Pi / 12f, (float)Math.Pow(Projectile.ai[1] / 15f, 2));
                 if (Projectile.ai[1] >= 15)
                 {
                     Phase = ACSlashPhase.Pause;
                     Projectile.ai[1] = 0;
+                    Main.projectile[SwordProj].friendly = false;
                 }
             }
             else if (Phase == ACSlashPhase.Pause)
@@ -222,7 +232,6 @@ namespace WireBugMod.Projectiles.GSword
                 Projectile.ai[1]++;
                 if (Projectile.ai[1] > 20)
                 {
-                    ReturningBug.Summon(owner, Projectile.Center, Projectile.spriteDirection);
                     Projectile.Kill();
                     return;
                 }
@@ -247,6 +256,7 @@ namespace WireBugMod.Projectiles.GSword
                 //Terraria.Utils.DrawLine(Main.spriteBatch, Main.player[Projectile.owner].Center, Projectile.Center + new Vector2(0, 5), Color.Cyan, Color.Cyan, 2);
             }
 
+            if (Disappear) return false;
 
             Texture2D tex = ModContent.Request<Texture2D>("WireBugMod/Images/WireBug").Value;
             Texture2D glow = ModContent.Request<Texture2D>("WireBugMod/Images/WireBug_Glow").Value;
@@ -277,15 +287,6 @@ namespace WireBugMod.Projectiles.GSword
             return false;
         }
 
-        private void GenDust(Vector2 Pos, float Speed, float scale)
-        {
-            Dust dust = Dust.NewDustDirect(Pos, 1, 1, DustID.WhiteTorch);
-            dust.color = Color.Cyan;
-            dust.velocity = (MathHelper.TwoPi * Main.rand.NextFloat()).ToRotationVector2() * Speed;
-            dust.position = Pos;
-            dust.noGravity = true;
-            dust.scale = scale;
-        }
 
     }
 }

@@ -57,7 +57,7 @@ namespace WireBugMod.Projectiles.SBlade
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
+                    SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
                 }
             }
             /*
@@ -77,7 +77,7 @@ namespace WireBugMod.Projectiles.SBlade
             owner.itemTime = owner.itemAnimation = 2;
 
 
-            float rotdir = GetRotByDir(Projectile.rotation, owner.direction);
+            float rotdir = PlayerUtils.GetRotationByDirection(Projectile.rotation, owner.direction);
             owner.ChangeItemRotation(rotdir, false);
 
 
@@ -157,10 +157,10 @@ namespace WireBugMod.Projectiles.SBlade
 
             SpriteEffects spriteEffects = owner.direction >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-            float rot = GetRotByDir(Projectile.rotation, owner.direction);
+            float rot = PlayerUtils.GetRotationByDirection(Projectile.rotation, owner.direction);
             rot += owner.direction >= 0 ? MathHelper.Pi / 4 : MathHelper.Pi / 4 * 3;
 
-            Vector2 EndPos = Projectile.Center + GetRotByDir(Projectile.rotation, owner.direction).ToRotationVector2() * StringLen;
+            Vector2 EndPos = Projectile.Center + PlayerUtils.GetRotationByDirection(Projectile.rotation, owner.direction).ToRotationVector2() * StringLen;
 
             Terraria.Utils.DrawLine(Main.spriteBatch, Projectile.Center, EndPos, Color.Cyan, Color.Cyan, 2f);
             Terraria.Utils.DrawLine(Main.spriteBatch, Projectile.Center, EndPos, Color.White, Color.White, 1.25f);
@@ -178,30 +178,7 @@ namespace WireBugMod.Projectiles.SBlade
             return false;
         }
 
-        private void GenDust(Vector2 Pos, float Speed, float scale)
-        {
-            Dust dust = Dust.NewDustDirect(Pos, 1, 1, DustID.WhiteTorch);
-            dust.color = Color.Cyan;
-            dust.velocity = (MathHelper.TwoPi * Main.rand.NextFloat()).ToRotationVector2() * Speed;
-            dust.position = Pos;
-            dust.noGravity = true;
-            dust.scale = scale;
-        }
 
 
-        private float GetRotByDir(float rot, int dir)
-        {
-            if (dir > 0)
-            {
-                return rot;
-            }
-            else
-            {
-                Vector2 temp = rot.ToRotationVector2();
-                temp.X = -temp.X;
-                rot = temp.ToRotation();
-                return rot;
-            }
-        }
     }
 }

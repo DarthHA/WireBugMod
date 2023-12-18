@@ -1,4 +1,6 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 using WireBugMod.Projectiles.SBlade;
@@ -60,6 +62,16 @@ namespace WireBugMod.Utils
         public static bool CheckSilkbindProj(int type)
         {
             return type == ModContent.ProjectileType<PiercingBindProj>() || type== ModContent.ProjectileType<TwinVineProj>();
+        }
+
+        public static void GenDust(Vector2 Pos, float Speed, float scale)
+        {
+            Dust dust = Dust.NewDustDirect(Pos, 1, 1, DustID.WhiteTorch);
+            dust.color = Color.Cyan;
+            dust.velocity = (MathHelper.TwoPi * Main.rand.NextFloat()).ToRotationVector2() * Speed;
+            dust.position = Pos;
+            dust.noGravity = true;
+            dust.scale = scale;
         }
     }
 }

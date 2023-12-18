@@ -1,3 +1,4 @@
+using Steamworks;
 using Terraria;
 using Terraria.ModLoader;
 using WireBugMod.System;
@@ -50,6 +51,16 @@ namespace WireBugMod.Projectiles
         /// 禁用近战判定和效果
         /// </summary>
         public bool DisableMeleeEffect = false;
+
+        /// <summary>
+        /// 休眠时间，无实际意义
+        /// </summary>
+        public int SleepTimer = 0;
+
+        public override void PostAI()
+        {
+            if (SleepTimer > 0) SleepTimer--;
+        }
 
     }
 }

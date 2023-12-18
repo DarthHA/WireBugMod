@@ -61,7 +61,7 @@ namespace WireBugMod.Projectiles.LSword
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
+                    SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
                 }
             }
 
@@ -185,20 +185,11 @@ namespace WireBugMod.Projectiles.LSword
                     Vector2 End = LineCenter + LineEnd[i];
                     Vector2 center = (Start + End) / 2f;
 
-                    Terraria.Utils.DrawLine(Main.spriteBatch, center + Vector2.Normalize(Start - center) * 70, center + Vector2.Normalize(End - center) * 70, Color.Cyan * Projectile.Opacity, Color.Cyan * Projectile.Opacity, 1);
+                    Terraria.Utils.DrawLine(Main.spriteBatch, center + Vector2.Normalize(Start - center) * 70, center + Vector2.Normalize(End - center) * 70, Color.Cyan * Projectile.Opacity, Color.Cyan * Projectile.Opacity, 1.5f);
+                    Terraria.Utils.DrawLine(Main.spriteBatch, center + Vector2.Normalize(Start - center) * 70, center + Vector2.Normalize(End - center) * 70, Color.Cyan * Projectile.Opacity, Color.White * Projectile.Opacity, 0.75f);
                 }
             }
             return false;
-        }
-
-        private void GenDust(Vector2 Pos, float Speed, float scale)
-        {
-            Dust dust = Dust.NewDustDirect(Pos, 1, 1, DustID.WhiteTorch);
-            dust.color = Color.Cyan;
-            dust.velocity = (MathHelper.TwoPi * Main.rand.NextFloat()).ToRotationVector2() * Speed;
-            dust.position = Pos;
-            dust.noGravity = true;
-            dust.scale = scale;
         }
 
     }

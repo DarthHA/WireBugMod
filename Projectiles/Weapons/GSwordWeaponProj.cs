@@ -36,13 +36,13 @@ namespace WireBugMod.Projectiles.Weapons
 
         public override void SafeOnHit(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Behavior == "ACS")
+            if (Behavior == "ACSlash")
             {
-
+                (Main.projectile[ProjOwner].ModProjectile as BaseSkillProj).SleepTimer = 10;
             }
             else if (Behavior == "SlashDown")
             {
-
+                (Main.projectile[ProjOwner].ModProjectile as BaseSkillProj).SleepTimer = 10;
             }
         }
 
@@ -72,7 +72,7 @@ namespace WireBugMod.Projectiles.Weapons
         }
 
 
-        public static void SummonSword(Projectile ProjOwner,ref int SwordProj, float rot, float DamageScale = 0, int hitCooldown = 999)
+        public static void SummonSword(Projectile ProjOwner, ref int SwordProj, float rot, float DamageScale = 0, int hitCooldown = 999, string Behavior = "")
         {
             if (SwordProj != -1) Main.projectile[SwordProj].Kill();
 
@@ -87,6 +87,7 @@ namespace WireBugMod.Projectiles.Weapons
                 modproj.ProjOwner = ProjOwner.whoAmI;
                 modproj.TexType = owner.HeldItem.type;
                 modproj.DamageScale = DamageScale;
+                modproj.Behavior = Behavior;
                 SwordProj = protmp;
             }
         }

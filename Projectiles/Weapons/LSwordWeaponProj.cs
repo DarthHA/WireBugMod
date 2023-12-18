@@ -65,6 +65,7 @@ namespace WireBugMod.Projectiles.Weapons
                 {
                     Vector2 SpawnPos = target.position + new Vector2(Main.rand.Next(target.width), Main.rand.Next(target.height));
                     SlashProj.Summon(Main.player[Projectile.owner], SpawnPos, 0, 0);
+                    (Main.projectile[ProjOwner].ModProjectile as BaseSkillProj).SleepTimer = 5;
                 }
                 if (HitCount == 1)
                 {

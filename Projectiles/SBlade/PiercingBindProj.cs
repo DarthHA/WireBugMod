@@ -107,7 +107,7 @@ namespace WireBugMod.Projectiles.SBlade
                 {
                     for (int i = 0; i < 2; i++)
                     {
-                        GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
+                        SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
                     }
                 }
                 if (Target == -1 || !Main.npc[Target].active || !Main.npc[Target].CanBeChasedBy() || Main.npc[Target].Distance(owner.Center) > 1500)
@@ -196,15 +196,6 @@ namespace WireBugMod.Projectiles.SBlade
             return false;
         }
 
-        private void GenDust(Vector2 Pos, float Speed, float scale)
-        {
-            Dust dust = Dust.NewDustDirect(Pos, 1, 1, DustID.WhiteTorch);
-            dust.color = Color.Cyan;
-            dust.velocity = (MathHelper.TwoPi * Main.rand.NextFloat()).ToRotationVector2() * Speed;
-            dust.position = Pos;
-            dust.noGravity = true;
-            dust.scale = scale;
-        }
 
         public override bool? CanHitNPC(NPC target)
         {

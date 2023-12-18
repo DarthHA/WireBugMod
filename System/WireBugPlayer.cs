@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using rail;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameInput;
@@ -7,6 +8,7 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using WireBugMod.Buffs;
 using WireBugMod.Projectiles;
+using WireBugMod.Projectiles.Weapons;
 using WireBugMod.System.Skill;
 using WireBugMod.UI;
 using WireBugMod.Utils;
@@ -84,6 +86,7 @@ namespace WireBugMod.System
         public bool JustPressedWireSkill2 = false;
         public bool JustPressedSwitchSkill = false;
 
+
         public bool SwitchSkill = false;
 
 
@@ -93,6 +96,8 @@ namespace WireBugMod.System
 
         public int SkillSwitchCooldown = 0;
 
+        public int ImmunityTimer = 0;
+        public int ForbiddenUseItemTimer = 0;
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
             PressingWireDash = WireBugMod.FlyBugKey.Current;
@@ -119,7 +124,12 @@ namespace WireBugMod.System
                 Player.controlRight = false;
                 Player.controlMount = false;
             }
-
+            if (ForbiddenUseItemTimer > 0)
+            {
+                Player.controlUseTile = false;
+                Player.controlUseItem = false;
+                Player.controlTorch = false;
+            }
         }
 
         public override void PostUpdateMiscEffects()
@@ -128,45 +138,91 @@ namespace WireBugMod.System
             {
                 SkillSwitchCooldown--;
             }
+            if (ForbiddenUseItemTimer > 0 && !LockInput)
+            {
+                ForbiddenUseItemTimer--;
+            }
+
+            if (ImmunityTimer > 0)
+            {
+                Player.buffImmune[BuffID.Stoned] = true;
+                Player.buffImmune[BuffID.Webbed] = true;
+                Player.buffImmune[BuffID.Frozen] = true;
+                ImmunityTimer--;
+            }
 
             if (HasWireBug)
             {
                 CheckAndUpdateBugCount();
                 CheckLock();
 
-                if (!LockInput && !Player.CCed && !Player.ItemAnimationActive && !Player.shimmerWet && !UIManager.Visible)        //可以操作,没有在微光里,没有被定住,且没有同时使用物品，没有打开翔虫UI，不在快速切换冷却时间内
+                bool PressAnyKey = PressingWireDash ||
+                PressingWireSkill1 ||
+                JustPressedWireDash ||
+                JustPressedWireSkill1 ||
+                JustPressedWireSkill2 ||
+                JustPressedSwitchSkill;
+
+                bool PressOnlyWireDash = PressingWireDash && !(
+                PressingWireSkill1 ||
+                JustPressedWireDash ||
+                JustPressedWireSkill1 ||
+                JustPressedWireSkill2 ||
+                JustPressedSwitchSkill);
+
+                if (PressAnyKey)
                 {
-                    if (JustPressedSwitchSkill)         //优先判定迅速切换
+                    if (!LockInput && !Player.shimmerWet && !UIManager.Visible)        //可以操作,没有在微光里,没有被定住,且没有同时使用物品，没有打开翔虫UI
                     {
-                        if (SkillSwitchCooldown == 0)
+                        if (!Player.CCed)
                         {
-                            SkillSwitchCooldown = 60;
-                            Player.SetIFrame(10);
-                            SwitchSkill = !SwitchSkill;
-                            Player.GetModPlayer<UIPlayer>().ProgressTimer = 0;
-                            Color color = Color.Yellow;
-                            if (SwitchSkill)
+                            if (!Player.ItemAnimationActive)
                             {
-                                color = Color.Cyan;
+                                if (JustPressedSwitchSkill)         //优先判定迅速切换
+                                {
+                                    PressSwitchSkillKey();
+                                }
+                                else
+                                {
+                                    //判断先后：可以操作，检查是否有虫可用,按下按键
+                                    SkillSystem.SelectAndUseSkill(this);
+                                }
                             }
-                            float start = MathHelper.TwoPi * Main.rand.NextFloat();
-                            for (int i = 0; i < 30; i++)
+                            else
                             {
-                                float r = start + MathHelper.TwoPi * i / 30f;
-                                int dusttmp = Dust.NewDust(Player.Center, 1, 1, DustID.BubbleBurst_White);
-                                Main.dust[dusttmp].position = Player.Center;
-                                Main.dust[dusttmp].color = color;
-                                Main.dust[dusttmp].velocity = r.ToRotationVector2() * 5;
-                                Main.dust[dusttmp].scale = 1.5f;
-                                Main.dust[dusttmp].noGravity = true;
-                                Main.dust[dusttmp].noLight = false;
+                                if (PressOnlyWireDash)
+                                {
+                                    Player.itemTime = Player.itemTimeMax;
+                                    Player.itemAnimation = Player.itemAnimationMax;
+                                    Player.controlUseItem = false;
+                                    SkillSystem.ForceUseWireDash(this, 1.25f);
+                                    ForbiddenUseItemTimer = 30;
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        //判断先后：可以操作，检查是否有虫可用,按下按键
-                        SkillSystem.SelectAndUseSkill(this);
+                        else
+                        {
+                            if (PressOnlyWireDash)         //Debuff受身
+                            {
+                                Player.frozen = false;
+                                Player.webbed = false;
+                                Player.stoned = false;
+                                Player.ClearBuff(BuffID.Frozen);
+                                Player.ClearBuff(BuffID.Webbed);
+                                Player.ClearBuff(BuffID.Stoned);
+
+                                SkillSystem.ForceUseWireDash(this, 3);
+
+                                Player.SetIFrame(60);
+                                ImmunityTimer = 60;
+                                ForbiddenUseItemTimer = 30;
+
+                                for (int i = 0; i < 20; i++)
+                                {
+                                   SkillUtils.GenDust(Player.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), Main.rand.Next(8), 1 + Main.rand.NextFloat() * 0.5f);
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -174,6 +230,19 @@ namespace WireBugMod.System
                 UpdateBugs();
                 BugStatusShow();
 
+            }
+            else         //清除弹幕
+            {
+                foreach(Projectile proj in Main.projectile)
+                {
+                    if (proj.active && proj.owner == Player.whoAmI && proj.ModProjectile != null)
+                    {
+                        if (proj.ModProjectile is BaseSkillProj || proj.ModProjectile is BaseWeaponProj)
+                        {
+                            proj.Kill();
+                        }
+                    }
+                }
             }
 
 
@@ -299,6 +368,32 @@ namespace WireBugMod.System
             Player.AddBuff(ModContent.BuffType<SwitchSkillBuff>(), 2);
         }
 
-
+        private void PressSwitchSkillKey()
+        {
+            if (SkillSwitchCooldown == 0)
+            {
+                SkillSwitchCooldown = 60;
+                Player.SetIFrame(10);
+                SwitchSkill = !SwitchSkill;
+                Player.GetModPlayer<UIPlayer>().ProgressTimer = 0;
+                Color color = Color.Yellow;
+                if (SwitchSkill)
+                {
+                    color = Color.Cyan;
+                }
+                float start = MathHelper.TwoPi * Main.rand.NextFloat();
+                for (int i = 0; i < 30; i++)
+                {
+                    float r = start + MathHelper.TwoPi * i / 30f;
+                    int dusttmp = Dust.NewDust(Player.Center, 1, 1, DustID.BubbleBurst_White);
+                    Main.dust[dusttmp].position = Player.Center;
+                    Main.dust[dusttmp].color = color;
+                    Main.dust[dusttmp].velocity = r.ToRotationVector2() * 5;
+                    Main.dust[dusttmp].scale = 1.5f;
+                    Main.dust[dusttmp].noGravity = true;
+                    Main.dust[dusttmp].noLight = false;
+                }
+            }
+        }
     }
 }

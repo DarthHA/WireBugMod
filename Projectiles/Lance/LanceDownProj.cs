@@ -74,7 +74,7 @@ namespace WireBugMod.Projectiles.Lance
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
+                    SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
                 }
             }
 
@@ -84,7 +84,7 @@ namespace WireBugMod.Projectiles.Lance
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                    SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
                 Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
@@ -96,7 +96,7 @@ namespace WireBugMod.Projectiles.Lance
                 {
                     for (int i = 0; i < 20; i++)
                     {
-                        GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(10), 1 + Main.rand.NextFloat() * 0.5f);
+                        SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(10), 1 + Main.rand.NextFloat() * 0.5f);
                     }
                     StartPos = owner.Center;
                     Projectile.Center = HoverPos;
@@ -110,7 +110,7 @@ namespace WireBugMod.Projectiles.Lance
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                    SkillUtils.GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
                 Vector2 HoverPos = TargetPos + new Vector2(0, -HoverY);
@@ -163,7 +163,7 @@ namespace WireBugMod.Projectiles.Lance
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                    SkillUtils.GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
                 Vector2 HoverPos = DownPos + new Vector2(0, HoverY);
@@ -175,7 +175,7 @@ namespace WireBugMod.Projectiles.Lance
                 {
                     for (int i = 0; i < 20; i++)
                     {
-                        GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(10), 1 + Main.rand.NextFloat() * 0.5f);
+                        SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(10), 1 + Main.rand.NextFloat() * 0.5f);
                     }
                     StartPos = owner.Center;
                     Projectile.Center = HoverPos;
@@ -189,7 +189,7 @@ namespace WireBugMod.Projectiles.Lance
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
+                    SkillUtils.GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
                 Vector2 HoverPos = DownPos + new Vector2(0, HoverY);
@@ -320,15 +320,6 @@ namespace WireBugMod.Projectiles.Lance
             return false;
         }
 
-        private void GenDust(Vector2 Pos, float Speed, float scale)
-        {
-            Dust dust = Dust.NewDustDirect(Pos, 1, 1, DustID.WhiteTorch);
-            dust.color = Color.Cyan;
-            dust.velocity = (MathHelper.TwoPi * Main.rand.NextFloat()).ToRotationVector2() * Speed;
-            dust.position = Pos;
-            dust.noGravity = true;
-            dust.scale = scale;
-        }
 
 
 
