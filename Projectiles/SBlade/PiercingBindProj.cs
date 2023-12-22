@@ -67,7 +67,7 @@ namespace WireBugMod.Projectiles.SBlade
             Player owner = Main.player[Projectile.owner];
             if (owner.IsDead() || UIManager.Visible)
             {
-                Projectile.Kill();
+                Projectile.Kill(); 
                 return;
             }
 
