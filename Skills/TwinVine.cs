@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
@@ -21,7 +22,7 @@ namespace WireBugMod.Skills
 
         public override bool NotWireDash => true;
 
-        public override List<WeaponType> weaponType => new List<WeaponType>() { WeaponType.Lance };
+        public override List<WeaponType> weaponType => new List<WeaponType>() { WeaponType.GreatSword };
 
         public override bool UseCondition(WireBugPlayer modplayer)
         {
@@ -41,12 +42,15 @@ namespace WireBugMod.Skills
             int protmp = Projectile.NewProjectile(player.GetSource_Misc("WireBug"), player.Center, ShootVel, ModContent.ProjectileType<TwinVineProj>(), 1, 5f, player.whoAmI);
             if (protmp >= 0)
             {
+                player.direction = Math.Sign(ShootVel.X);
                 TwinVineProj modproj = Main.projectile[protmp].ModProjectile as TwinVineProj;
                 modproj.Phase = TwinVinePhase.Pierce;
                 modproj.UsedBugID1 = UseBug1;
                 modproj.UsedBugID2 = UseBug2;
                 modproj.LockInput = false;
                 modproj.DisableMeleeEffect = true;
+                modproj.ItemType = player.HeldItem.type;
+                modproj.OriginalDir = player.direction;
                 return true;
             }
             return false;

@@ -72,6 +72,7 @@ Projectiles: {
 	ACSlashProj.DisplayName: 金刚蓄力斩
 	ACSBugRoundingProj.DisplayName: 铁虫丝
 	TwinVineProj.DisplayName: 决斗缠绕
+	// BugDefendProj.DisplayName: Bug Defend Proj
 }
 
 WeaponType: {

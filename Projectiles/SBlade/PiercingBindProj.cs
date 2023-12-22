@@ -4,6 +4,7 @@ using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WireBugMod.UI;
 using WireBugMod.Utils;
 
 namespace WireBugMod.Projectiles.SBlade
@@ -25,12 +26,18 @@ namespace WireBugMod.Projectiles.SBlade
 
         bool Connected = false;
 
+
+        public int ItemType = 1;
+        public int OriginalDir = 1;
+        public int SavedDamage = 1;
+
         public int Target = -1;
         private Vector2 SavedRelaPos = Vector2.Zero;
         private int SavedDir = 1;
         private float SavedRot = 0;
 
         public const int Cooldown = 5;
+
 
         public override void SetStaticDefaults()
         {
@@ -58,7 +65,7 @@ namespace WireBugMod.Projectiles.SBlade
         public override void AI()
         {
             Player owner = Main.player[Projectile.owner];
-            if (owner.IsDead())
+            if (owner.IsDead() || UIManager.Visible)
             {
                 Projectile.Kill();
                 return;
@@ -166,7 +173,7 @@ namespace WireBugMod.Projectiles.SBlade
                 Projectile.Kill();
                 return;
             }
-
+            if (Projectile.ai[2] > 0) Projectile.ai[2]--;
         }
 
         public override bool ShouldUpdatePosition()
@@ -177,22 +184,58 @@ namespace WireBugMod.Projectiles.SBlade
         {
             Player owner = Main.player[Projectile.owner];
 
-            Texture2D tex = ModContent.Request<Texture2D>("WireBugMod/Images/ThrowingKnife").Value;
-
+            Texture2D tex = DrawUtils.GetItemTexture(ItemType);
             if (Connected)
             {
-                Vector2 DrawEnd = Projectile.Center - Projectile.rotation.ToRotationVector2() * 12;
+                float OffSet = tex.Size().Length() / 2f;
+                Vector2 DrawEnd = Projectile.Center - Projectile.rotation.ToRotationVector2() * OffSet;
                 Terraria.Utils.DrawLine(Main.spriteBatch, DrawEnd, owner.Center, Color.White, Color.Transparent, 2);
             }
-            Main.spriteBatch.Draw(tex,
-                Projectile.Center - Main.screenPosition,
-                null,
-                lightColor,
-                Projectile.rotation,
-                tex.Size() / 2f,
-                Projectile.scale,
-                SpriteEffects.None,
-                0);
+
+
+            if (Phase == PiercingBindPhase.Pierce || Phase == PiercingBindPhase.PierceButNoDamage)
+            {
+                Vector2 origin = tex.Size() / 2f;
+                SpriteEffects spriteEffects = owner.direction >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+                float rot = Projectile.rotation;
+                rot += owner.direction >= 0 ? MathHelper.Pi / 4 : MathHelper.Pi / 4 * 3;
+
+
+                Main.spriteBatch.Draw(tex,
+                    Projectile.Center - Main.screenPosition,
+                    null,
+                    lightColor,
+                    rot,
+                    origin,
+                    Projectile.scale,
+                    spriteEffects,
+                    0);
+            }
+            else
+            {
+                if (Target == -1) return false;
+                bool RightDir = OriginalDir >= 0 && (SavedDir == Main.npc[Target].spriteDirection) || OriginalDir < 0 && (SavedDir != Main.npc[Target].spriteDirection);
+                Vector2 origin = tex.Size() / 2f;
+
+                SpriteEffects spriteEffects = RightDir ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+                float rot = Projectile.rotation;
+                rot += RightDir ? MathHelper.Pi / 4 : MathHelper.Pi / 4 * 3;
+
+
+                Main.spriteBatch.Draw(tex,
+                    Projectile.Center - Main.screenPosition,
+                    null,
+                    lightColor,
+                    rot,
+                    origin,
+                    Projectile.scale,
+                    spriteEffects,
+                    0);
+            }
+
+
             return false;
         }
 
@@ -208,15 +251,18 @@ namespace WireBugMod.Projectiles.SBlade
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)        //48,20
         {
-            float point = 0;
-            return Collision.CheckAABBvLineCollision(
-                targetHitbox.TopLeft(),
-                targetHitbox.Size(),
-                Projectile.Center,
-                Projectile.Center + Projectile.rotation.ToRotationVector2() * 48,
-                20,
-                ref point);
+            Player owner = Main.player[Projectile.owner];
+            Texture2D tex = DrawUtils.GetItemTexture(ItemType);
+            float dist = Math.Max(tex.Width, tex.Height) * owner.GetAdjustedItemScale(owner.HeldItem);
+            float rot = Projectile.rotation;
+            Vector2 UnitX = (rot + MathHelper.Pi / 4).ToRotationVector2();
+            Vector2 UnitY = (rot - MathHelper.Pi / 4).ToRotationVector2();
+            float point = 1;
+
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center + UnitX * dist * 0.5f, Projectile.Center + UnitX * dist * 0.5f + UnitY * dist, dist, ref point);
         }
+
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Target = target.whoAmI;

@@ -72,6 +72,7 @@ Projectiles: {
 	ACSlashProj.DisplayName: Adamant Charged Slash
 	ACSBugRoundingProj.DisplayName: Ironsilk
 	TwinVineProj.DisplayName: Twin Vine
+	BugDefendProj.DisplayName: Bug Defend Proj
 }
 
 WeaponType: {

@@ -67,10 +67,11 @@ namespace WireBugMod.Projectiles
             return false;
         }
 
-        public static int Summon(Vector2 Pos)
+        public static int Summon(Vector2 Pos, float scale = 1f)
         {
             int protmp = Projectile.NewProjectile(Main.LocalPlayer.GetSource_Misc("GPSpark"), Pos, Vector2.Zero, ModContent.ProjectileType<GPSpark>(), 0, 0, Main.myPlayer);
             Main.projectile[protmp].rotation = Main.rand.NextFloat() * MathHelper.TwoPi;
+            Main.projectile[protmp].scale = scale;
             return protmp;
         }
     }

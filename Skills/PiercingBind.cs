@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
@@ -41,12 +42,16 @@ namespace WireBugMod.Skills
             int protmp = Projectile.NewProjectile(player.GetSource_Misc("WireBug"), player.Center, ShootVel, ModContent.ProjectileType<PiercingBindProj>(), 1, 5f, player.whoAmI);
             if (protmp >= 0)
             {
+                player.direction = Math.Sign(ShootVel.X);
                 PiercingBindProj modproj = Main.projectile[protmp].ModProjectile as PiercingBindProj;
                 modproj.Phase = PiercingBindPhase.Pierce;
                 modproj.UsedBugID1 = UseBug1;
                 modproj.UsedBugID2 = UseBug2;
                 modproj.LockInput = false;
                 modproj.DisableMeleeEffect = true;
+                modproj.ItemType = player.HeldItem.type;
+                modproj.SavedDamage = player.GetWeaponDamage();
+                modproj.OriginalDir = player.direction;
                 return true;
             }
             return false;
@@ -68,6 +73,7 @@ namespace WireBugMod.Skills
         private void OnHitEither(Player player, NPC target, NPC.HitInfo hit)
         {
             int HasTarget = -1;
+            int damage = 1;
             Vector2 KnifePos = Vector2.Zero;
             foreach (Projectile proj in Main.projectile)
             {
@@ -76,7 +82,8 @@ namespace WireBugMod.Skills
                     if (proj.ai[2] == 0)
                     {
                         proj.ai[2] = PiercingBindProj.Cooldown;
-                        proj.localAI[0] += hit.Damage / 2;
+                        damage = (proj.ModProjectile as PiercingBindProj).SavedDamage / 2;
+                        proj.localAI[0] += damage;
                         HasTarget = (proj.ModProjectile as PiercingBindProj).Target;
                         KnifePos = proj.Center;
                         break;
@@ -88,7 +95,7 @@ namespace WireBugMod.Skills
                 if (NPCUtils.IsTheSameOwner(Main.npc[HasTarget], target))
                 {
                     player.StrikeNPCDirect(target,
-                        target.CalculateHitInfo(hit.Damage / 2, hit.HitDirection, false, 0, hit.DamageType, false, player.luck));
+                        target.CalculateHitInfo(damage, hit.HitDirection, false, 0, DamageClass.Melee, false, player.luck));
                     SlashProj.Summon(player, KnifePos, 0, 0);
                 }
             }

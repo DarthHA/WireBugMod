@@ -30,7 +30,6 @@ namespace WireBugMod.Projectiles.SBlade
         public const float DragSpeed = 25;
         public const float ReturnSpeed = 20;
 
-        private int SwordProj = -1;
         private bool GetHit = false;
         private bool Hit = false;
 
@@ -89,12 +88,7 @@ namespace WireBugMod.Projectiles.SBlade
                     SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
                 Projectile.ai[1]++;
-                if (Projectile.ai[1] == 1)
-                {
-                    LSwordWeaponProj.SummonSword(Projectile, ref SwordProj, 0);
-                }
                 float TargetRot = (TargetPos - StartPos).ToRotation();
-                Main.projectile[SwordProj].rotation = PlayerUtils.GetRotationByDirection(TargetRot, owner.direction);
 
                 Vector2 HoverPos = TargetPos + Vector2.Normalize(TargetPos - StartPos) * HoverY;
                 int timeNeeded = Math.Clamp((int)((StartPos - HoverPos).Length() / ShootSpeed), 1, 10);
@@ -137,11 +131,7 @@ namespace WireBugMod.Projectiles.SBlade
 
                 float TargetRot = (TargetPos - StartPos).ToRotation();
                 owner.GetModPlayer<MiscEffectPlayer>().ShieldRotation = PlayerUtils.GetRotationByDirection(TargetRot, owner.direction);
-                float DeltaRot = MathHelper.Pi / 6 * 5 / Math.Min(5, timeNeeded);
-                if (Projectile.ai[1] <= 5)
-                {
-                    Main.projectile[SwordProj].rotation += DeltaRot;
-                }
+
 
                 if (owner.GetModPlayer<MiscEffectPlayer>().JustHit > 0 && !GetHit)
                 {

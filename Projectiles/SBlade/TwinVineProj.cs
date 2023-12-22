@@ -27,10 +27,15 @@ namespace WireBugMod.Projectiles.SBlade
 
         bool Connected = false;
 
+        public int ItemType = 1;
+        public int OriginalDir = 1;
+
         public int Target = -1;
         private Vector2 SavedRelaPos = Vector2.Zero;
         private int SavedDir = 1;
         private float SavedRot = 0;
+
+        private int Cooldown = 0;
 
         public const float DragSpeed = 30;
 
@@ -60,7 +65,7 @@ namespace WireBugMod.Projectiles.SBlade
         public override void AI()
         {
             Player owner = Main.player[Projectile.owner];
-            if (owner.IsDead())
+            if (owner.IsDead() || UIManager.Visible)
             {
                 Projectile.Kill();
                 return;
@@ -129,19 +134,22 @@ namespace WireBugMod.Projectiles.SBlade
                     Projectile.rotation = PlayerUtils.GetRotationByDirection(SavedRot, -1) + Main.npc[Target].rotation;
                 }
 
-                if (!owner.GetModPlayer<WireBugPlayer>().LockInput && !owner.CCed && !owner.ItemAnimationActive && !owner.shimmerWet && !UIManager.Visible)        //可以操作,没有在微光里,没有被定住,且没有同时使用物品，没有打开翔虫UI
+                if (Cooldown == 0)
                 {
-                    if (owner.GetSkillKeyJPStatus("TwinVine").HasValue && owner.GetSkillKeyJPStatus("TwinVine").Value)
+                    if (!owner.GetModPlayer<WireBugPlayer>().LockInput && !owner.CCed && !owner.ItemAnimationActive && !owner.shimmerWet && !UIManager.Visible)        //可以操作,没有在微光里,没有被定住,且没有同时使用物品，没有打开翔虫UI
                     {
-                        Phase = TwinVinePhase.MoveForward;
-                        LockInput = true;
-                        owner.RemoveAllGrapplingHooks();
-                        owner.mount.Dismount(owner);
-                        return;
+                        if (owner.GetSkillKeyJPStatus("TwinVine").HasValue && owner.GetSkillKeyJPStatus("TwinVine").Value)
+                        {
+                            Phase = TwinVinePhase.MoveForward;
+                            LockInput = true;
+                            owner.RemoveAllGrapplingHooks();
+                            owner.mount.Dismount(owner);
+                            return;
+                        }
                     }
                 }
 
-
+                if (Cooldown > 0) Cooldown--;
 
                 Projectile.ai[1]++;
                 if (Projectile.ai[1] == 10)
@@ -195,15 +203,17 @@ namespace WireBugMod.Projectiles.SBlade
                     SkillUtils.GenDust(owner.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), 0, 1 + Main.rand.NextFloat() * 0.5f);
                 }
 
-                if (owner.GetSkillKeyJPStatus("TwinVine").HasValue && owner.GetSkillKeyJPStatus("TwinVine").Value)
+                if (owner.GetSkillKeyJPStatus("TwinVine").HasValue && owner.GetSkillKeyJPStatus("TwinVine").Value)  //提前停止
                 {
                     Phase = TwinVinePhase.Stay;
                     Projectile.ai[2] = 0;
+                    Cooldown = 120;
                     LockInput = false;
+                    owner.velocity = Vector2.Normalize(owner.velocity) * 1;
                     return;
                 }
 
-                Projectile.ai[2]++;
+                Projectile.ai[2]++;        //保险栓，每次只能前进300帧时间
 
                 Vector2 TargetPos = Main.npc[Target].Center;
                 float DistMin = (Main.npc[Target].width + Main.npc[Target].height) / 4f * 1.4f + 100f;
@@ -220,6 +230,7 @@ namespace WireBugMod.Projectiles.SBlade
                     owner.velocity = Vector2.Normalize(owner.velocity) * 1;
                     Phase = TwinVinePhase.Stay;
                     Projectile.ai[2] = 0;
+                    Cooldown = 120;
                     LockInput = false;
                 }
 
@@ -236,15 +247,17 @@ namespace WireBugMod.Projectiles.SBlade
         {
             return false;
         }
+
+
         public override bool PreDraw(ref Color lightColor)
         {
             Player owner = Main.player[Projectile.owner];
 
-            Texture2D tex = ModContent.Request<Texture2D>("WireBugMod/Images/ThrowingKnife").Value;
-
+            Texture2D tex = DrawUtils.GetItemTexture(ItemType);
             if (Connected)
             {
-                Vector2 DrawEnd = Projectile.Center - Projectile.rotation.ToRotationVector2() * 12;
+                float OffSet = tex.Size().Length() / 2f;
+                Vector2 DrawEnd = Projectile.Center - Projectile.rotation.ToRotationVector2() * OffSet;
                 Color LineColor = Color.White;
                 if (owner.Distance(Main.npc[Target].Center) > 1250)
                 {
@@ -252,15 +265,50 @@ namespace WireBugMod.Projectiles.SBlade
                 }
                 Terraria.Utils.DrawLine(Main.spriteBatch, DrawEnd, owner.Center, LineColor, Color.Transparent, 2);
             }
-            Main.spriteBatch.Draw(tex,
-                Projectile.Center - Main.screenPosition,
-                null,
-                lightColor,
-                Projectile.rotation,
-                tex.Size() / 2f,
-                Projectile.scale,
-                SpriteEffects.None,
-                0);
+
+            if (Phase == TwinVinePhase.Pierce || Phase == TwinVinePhase.PierceButNoDamage)
+            {
+                Vector2 origin = tex.Size() / 2f;
+                SpriteEffects spriteEffects = owner.direction >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+                float rot = Projectile.rotation;
+                rot += owner.direction >= 0 ? MathHelper.Pi / 4 : MathHelper.Pi / 4 * 3;
+
+
+                Main.spriteBatch.Draw(tex,
+                    Projectile.Center - Main.screenPosition,
+                    null,
+                    lightColor,
+                    rot,
+                    origin,
+                    Projectile.scale,
+                    spriteEffects,
+                    0);
+            }
+            else
+            {
+                if (Target == -1) return false;
+                bool RightDir = OriginalDir >= 0 && (SavedDir == Main.npc[Target].spriteDirection) || OriginalDir < 0 && (SavedDir != Main.npc[Target].spriteDirection);
+                Vector2 origin = tex.Size() / 2f;
+
+                SpriteEffects spriteEffects = RightDir ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+                float rot = Projectile.rotation;
+                rot += RightDir ? MathHelper.Pi / 4 : MathHelper.Pi / 4 * 3;
+
+
+                Main.spriteBatch.Draw(tex,
+                    Projectile.Center - Main.screenPosition,
+                    null,
+                    lightColor,
+                    rot,
+                    origin,
+                    Projectile.scale,
+                    spriteEffects,
+                    0);
+            }
+
+
             return false;
         }
 
@@ -276,14 +324,15 @@ namespace WireBugMod.Projectiles.SBlade
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)        //48,20
         {
-            float point = 0;
-            return Collision.CheckAABBvLineCollision(
-                targetHitbox.TopLeft(),
-                targetHitbox.Size(),
-                Projectile.Center,
-                Projectile.Center + Projectile.rotation.ToRotationVector2() * 48,
-                20,
-                ref point);
+            Player owner = Main.player[Projectile.owner];
+            Texture2D tex = DrawUtils.GetItemTexture(ItemType);
+            float dist = Math.Max(tex.Width, tex.Height) * owner.GetAdjustedItemScale(owner.HeldItem);
+            float rot = Projectile.rotation;
+            Vector2 UnitX = (rot + MathHelper.Pi / 4).ToRotationVector2();
+            Vector2 UnitY = (rot - MathHelper.Pi / 4).ToRotationVector2();
+            float point = 1;
+
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center + UnitX * dist * 0.5f, Projectile.Center + UnitX * dist * 0.5f + UnitY * dist, dist, ref point);
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {

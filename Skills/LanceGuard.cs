@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
+using WireBugMod.Projectiles.BugDefend;
 using WireBugMod.Projectiles.Lance;
 using WireBugMod.System;
 using WireBugMod.System.Skill;
@@ -21,7 +22,7 @@ namespace WireBugMod.Skills
 
         public override bool NotWireDash => true;
 
-        public override List<WeaponType> weaponType => new List<WeaponType>() { WeaponType.Lance };
+        public override List<WeaponType> weaponType => new List<WeaponType>() { WeaponType.Lance, WeaponType.GreatSword };
         public override bool UseCondition(WireBugPlayer modplayer)
         {
             Player player = modplayer.Player;
@@ -35,11 +36,11 @@ namespace WireBugMod.Skills
         {
             Player player = modplayer.Player;
             player.direction = Math.Sign(Main.MouseWorld.X - player.Center.X);
-            int protmp = Projectile.NewProjectile(player.GetSource_Misc("WireBug"), modplayer.Player.Center, Vector2.Zero, ModContent.ProjectileType<LanceGuardProj>(), 0, 0, player.whoAmI);
+            int protmp = Projectile.NewProjectile(player.GetSource_Misc("WireBug"), modplayer.Player.Center, Vector2.Zero, ModContent.ProjectileType<BugDefendProj>(), 0, 0, player.whoAmI);
             if (protmp >= 0)
             {
-                LanceGuardProj modproj = Main.projectile[protmp].ModProjectile as LanceGuardProj;
-                modproj.Phase = LanceGuardPhase.Guard;
+                BugDefendProj modproj = Main.projectile[protmp].ModProjectile as BugDefendProj;
+                modproj.Phase = BugDefendPhase.Guard;
                 modproj.ShieldRaise = true;
                 modproj.ActivatingGP = true;
                 modproj.ShieldLevel = 2;

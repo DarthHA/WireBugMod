@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Text.RegularExpressions;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -199,8 +200,20 @@ namespace WireBugMod.Projectiles.GSword
                     }
                 }
 
-                if (Projectile.ai[1] > 30)
+                if (Projectile.ai[1] > 30)         //重新校正下批坐标
                 {
+
+                    Vector2 targetVec = Main.MouseWorld - owner.Center;
+                    if (targetVec.Y != 0 && Math.Abs(targetVec.X / targetVec.Y) > 0.5f)
+                    {
+                        targetVec.X = Math.Abs(0.5f * targetVec.Y) * Math.Sign(targetVec.X);
+                    }
+                    if (targetVec.Length() < 300)
+                    {
+                        targetVec = Vector2.Normalize(targetVec) * 300;
+                    }
+                    DownPos = PlayerUtils.SearchForNotBlockedPos(owner.Center, owner.Center + new Vector2(targetVec.X, Math.Abs(targetVec.Y)));
+
                     Projectile.ai[1] = 0;
                     Phase = SlashDownPhase.Falling;
                     StartPos = owner.Center;

@@ -68,11 +68,14 @@ namespace WireBugMod.Projectiles.GSword
                 Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
             }
 
-            if (Main.rand.NextBool(12))
+            if (!Disappear)
             {
-                for (int i = 0; i < 2; i++)
+                if (Main.rand.NextBool(12))
                 {
-                    SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
+                    for (int i = 0; i < 2; i++)
+                    {
+                        SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-20, 20), Main.rand.Next(-20, 20)), Main.rand.Next(5), 1 + Main.rand.NextFloat() * 0.5f);
+                    }
                 }
             }
 

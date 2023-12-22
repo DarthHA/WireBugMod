@@ -128,6 +128,10 @@ namespace WireBugMod.Projectiles
                         Projectile.ai[1] = 0;
                         Phase = WireDashPhase.Hover;
                         LockAllBug = true;
+                        for (int i = 0; i < 20; i++)
+                        {
+                            SkillUtils.GenDust(Projectile.Center + new Vector2(Main.rand.Next(-10, 10), Main.rand.Next(-10, 10)), Main.rand.Next(8), 1 + Main.rand.NextFloat() * 0.5f);
+                        }
                     }
                 }
             }
@@ -199,6 +203,7 @@ namespace WireBugMod.Projectiles
                 Projectile.scale * 0.75f,
                 spriteEffects,
                 0);
+
             return false;
         }
 
